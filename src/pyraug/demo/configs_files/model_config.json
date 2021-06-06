@@ -1,0 +1,8 @@
+{
+  "latent_dim": 10,
+  "n_lf": 3,
+  "eps_lf": 0.001,
+  "temperature": 1.5,
+  "regularization": 0.01,
+  "beta_zero": 0.3
+}

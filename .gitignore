@@ -1,0 +1,7 @@
+*.ipynb
+data
+__pycache__
+notebooks
+docs
+src/pyraug.egg-info
+.vscode
