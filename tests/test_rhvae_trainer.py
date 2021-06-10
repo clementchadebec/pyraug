@@ -49,7 +49,7 @@ def dummy_training_config():
         np.array([[10.0, 1], [2, 0.0], [0.0, 1.0]]),
         torch.tensor([[10.0, 1, 10.0], [0.0, 2.0, 1.0]]),
         torch.load(
-            "tests/data/demo_mnist_data"
+            "tests/data/unnormalized_mnist_data_array"
         ),  # This is an extract of 3 data from MNIST (unnormalized)
     ]
 )

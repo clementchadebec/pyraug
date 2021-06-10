@@ -5,11 +5,20 @@ import os
 
 import torch
 
+from pyraug.models import RHVAE
 from pyraug.config import GenerationConfig, ModelConfig
 from pyraug.config_loader import ConfigParserFromJSON
 from pyraug.models.vae_models import RHVAE
 from pyraug.sampler import hmc_manifold_sampling
 
+
+class Generator:
+    def __init__(
+        self,
+        model: ,
+        generation_args:
+        sampler
+        )
 
 class Generator:
     def __init__(self, generation_config_file: str):

@@ -3,12 +3,18 @@ import typing
 import torch
 import torch.nn as nn
 
-from pyraug.models.base_architectures import *
+from pyraug.models.nn import *
 
 
 class Encoder_MLP(Base_Encoder):
     def __init__(self, args: dict):
         Base_Encoder.__init__(self)
+
+        if args.input_dim is None:
+            raise AttributeError("No input dimension provided !"
+            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where"
+            "the shape of the data is [mini_batch x data_shape]. Unable to build encoder" 
+            "automatically")
 
         self.input_dim = args.input_dim
         self.latent_dim = args.latent_dim
@@ -26,6 +32,12 @@ class Decoder_MLP(Base_Decoder):
     def __init__(self, args: dict):
         Base_Decoder.__init__(self)
 
+        if args.input_dim is None:
+            raise AttributeError("No input dimension provided !"
+            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where"
+            "the shape of the data is [mini_batch x data_shape]. Unable to build decoder" 
+            "automatically")
+
         self.layers = nn.Sequential(
             nn.Linear(args.latent_dim, 500),
             nn.ReLU(),
@@ -41,9 +53,14 @@ class Metric_MLP(Base_Metric):
     def __init__(self, args: dict):
         Base_Metric.__init__(self)
 
+        if args.input_dim is None:
+            raise AttributeError("No input dimension provided !"
+            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where"
+            "the shape of the data is [mini_batch x data_shape]. Unable to build metric" 
+            "automatically")
+
         self.input_dim = args.input_dim
         self.latent_dim = args.latent_dim
-        self.device = args.device
 
         self.layers = nn.Sequential(nn.Linear(self.input_dim, 400), nn.ReLU())
         self.diag = nn.Linear(400, self.latent_dim)
@@ -55,7 +72,7 @@ class Metric_MLP(Base_Metric):
         h1 = self.layers(x.view(-1, self.input_dim))
         h21, h22 = self.diag(h1), self.lower(h1)
 
-        L = torch.zeros((x.shape[0], self.latent_dim, self.latent_dim)).to(self.device)
+        L = torch.zeros((x.shape[0], self.latent_dim, self.latent_dim)).to(x.device)
         indices = torch.tril_indices(
             row=self.latent_dim, col=self.latent_dim, offset=-1
         )

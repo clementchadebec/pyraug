@@ -1,14 +1,63 @@
 import json
+import os
 
 import pytest
 from pydantic import ValidationError
 
-from pyraug.config import GenerationConfig, ModelConfig, TrainingConfig
-from pyraug.config_loader import ConfigParserFromJSON
+from pyraug.config import BaseConfig
+
+from pyraug.models.model_utils import ModelConfig
+
+from pyraug.models.rhvae.rhvae_config import RHVAEConfig, RHVAEGenerationConfig
+from pyraug.trainers.training_config import TrainingConfig
 
 
 # RHVAE loading tests
-class Test_Load_Config_From_JSON:
+class Test_Save_Model_JSON_from_Config:
+
+    @pytest.fixture(params=[
+        ModelConfig(),
+        ModelConfig(input_dim=100, latent_dim=5)
+    ])
+    def model_configs(self, request):
+        return request.param
+
+    def test_save_json(self, tmpdir, model_configs):
+        tmpdir.mkdir("dummy_folder")
+        dir_path = dir_path = os.path.join(tmpdir, "dummy_folder")
+
+        model_configs.save_json(dir_path, "dummy_json")
+
+        assert 'dummy_json.json' in os.listdir(dir_path)
+
+        rec_model_config = ModelConfig.from_json_file(os.path.join(dir_path, "dummy_json.json"))
+
+        assert rec_model_config.__dict__ == model_configs.__dict__
+
+    
+    
+    @pytest.fixture(params=[
+        TrainingConfig(),
+        TrainingConfig(learning_rate=100, batch_size=15)
+    ])
+    def training_configs(self, request):
+        return request.param
+
+    def test_save_json(self, tmpdir, training_configs):
+        tmpdir.mkdir("dummy_folder")
+        dir_path = dir_path = os.path.join(tmpdir, "dummy_folder")
+
+        training_configs.save_json(dir_path, "dummy_json")
+
+        assert 'dummy_json.json' in os.listdir(dir_path)
+
+        rec_training_config = TrainingConfig.from_json_file(os.path.join(dir_path, "dummy_json.json"))
+
+        assert rec_training_config.__dict__ == training_configs.__dict__
+
+
+
+class Test_Load_RHVAE_Config_From_JSON:
     @pytest.fixture(
         params=[
             "tests/data/rhvae/configs/model_config00.json",
@@ -31,7 +80,7 @@ class Test_Load_Config_From_JSON:
         params=[
             [
                 "tests/data/rhvae/configs/model_config00.json",
-                ModelConfig(
+                RHVAEConfig(
                     latent_dim=11,
                     n_lf=2,
                     eps_lf=0.00001,
@@ -46,12 +95,12 @@ class Test_Load_Config_From_JSON:
                     batch_size=3,
                     max_epochs=2,
                     learning_rate=1e-5,
-                    early_stopping_epochs=10,
+                    train_early_stopping=10,
                 ),
             ],
             [
                 "tests/data/rhvae/configs/generation_config00.json",
-                GenerationConfig(
+                RHVAEGenerationConfig(
                     batch_size=3,
                     mcmc_steps_nbr=3,
                     n_lf=2,
@@ -64,57 +113,55 @@ class Test_Load_Config_From_JSON:
     def custom_config_path_with_true_config(self, request):
         return request.param
 
+
     def test_load_custom_config(self, custom_config_path_with_true_config):
-        parser = ConfigParserFromJSON()
 
         config_path = custom_config_path_with_true_config[0]
         true_config = custom_config_path_with_true_config[1]
 
         if config_path == "tests/data/rhvae/configs/model_config00.json":
-            parsed_config = parser.parse_model(config_path)
+            parsed_config = RHVAEConfig.from_json_file(config_path)
 
         elif config_path == "tests/data/rhvae/configs/training_config00.json":
-            parsed_config = parser.parse_training(config_path)
+            parsed_config = TrainingConfig.from_json_file(config_path)
 
         else:
-            parsed_config = parser.parse_generation(config_path)
+            parsed_config = RHVAEGenerationConfig.from_json_file(config_path)
 
         assert parsed_config == true_config
 
-    def test_load_dict_default_config(self, custom_config_path):
-        parser = ConfigParserFromJSON()
-        model_dict = parser._get_config(custom_config_path)
-        assert type(model_dict) == dict
+
+    def test_load_dict_from_json_config(self, custom_config_path):
+        config_dict = BaseConfig._dict_from_json(custom_config_path)
+        assert type(config_dict) == dict
 
     def test_raise_load_file_not_found(self, corrupted_config_path):
-        parser = ConfigParserFromJSON()
         with pytest.raises(FileNotFoundError):
-            model_dict = parser._get_config(corrupted_config_path)
+            _ = BaseConfig._dict_from_json(corrupted_config_path)
 
     def test_raise_not_json_file(self, not_json_config_path):
-        parser = ConfigParserFromJSON()
         with pytest.raises(TypeError):
-            model_dict = parser._get_config(not_json_config_path)
-
+            _ = BaseConfig._dict_from_json(not_json_config_path)
 
 class Test_Load_Config_From_Dict:
     @pytest.fixture(params=[{"latant_dim": 10}, {"batsh_size": 1}, {"mcmc_steps": 12}])
     def corrupted_keys_dict_config(self, request):
         return request.param
 
+
     def test_raise_type_error_corrupted_keys(self, corrupted_keys_dict_config):
-        parser = ConfigParserFromJSON()
         if set(corrupted_keys_dict_config.keys()).issubset(["latant_dim"]):
             with pytest.raises(TypeError):
-                parser._populate_model(**corrupted_keys_dict_config)
+                RHVAEConfig.from_dict(corrupted_keys_dict_config)
 
         elif set(corrupted_keys_dict_config.keys()).issubset(["batsh_size"]):
             with pytest.raises(TypeError):
-                parser._populate_training(**corrupted_keys_dict_config)
+                TrainingConfig.from_dict(corrupted_keys_dict_config)
 
         else:
             with pytest.raises(TypeError):
-                parser._populate_generation(**corrupted_keys_dict_config)
+                RHVAEGenerationConfig.from_dict(corrupted_keys_dict_config)
+
 
     @pytest.fixture(
         params=[
@@ -127,15 +174,15 @@ class Test_Load_Config_From_Dict:
         return request.param
 
     def test_raise_type_error_corrupted_keys(self, corrupted_type_dict_config):
-        parser = ConfigParserFromJSON()
+
         if set(corrupted_type_dict_config.keys()).issubset(["latent_dim"]):
             with pytest.raises(ValidationError):
-                parser._populate_model(corrupted_type_dict_config)
+                RHVAEConfig.from_dict(corrupted_type_dict_config)
 
         elif set(corrupted_type_dict_config.keys()).issubset(["batch_size"]):
             with pytest.raises(ValidationError):
-                parser._populate_training(corrupted_type_dict_config)
+                TrainingConfig.from_dict(corrupted_type_dict_config)
 
         else:
             with pytest.raises(ValidationError):
-                parser._populate_generation(corrupted_type_dict_config)
+                RHVAEGenerationConfig.from_dict(corrupted_type_dict_config)

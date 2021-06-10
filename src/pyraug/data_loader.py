@@ -14,12 +14,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 DEMOS = ["mnist"]
 
 
-class Checker(ABC):
-    def __init__(self):
-        pass
-
-
-class DataChecker:
+class DataChecker:  ## TODO (remove)
     def __init__(self):
         pass
 
@@ -65,7 +60,7 @@ class DataChecker:
         return clean_data.reshape_as(data)
 
 
-class DataGetter:
+class DataGetter: # TODO (improve this fonction with load_from_folder(), etc)
     def __init__(self):
         pass
 
@@ -93,7 +88,11 @@ class DataGetter:
         return data
 
 
-class Dataset(data.Dataset):
+    def load_from_folder():
+        NotImplemented
+
+
+class Dataset(data.Dataset): # TODO (remove)
     def __init__(self, digits, labels, binarize=False):
 
         self.labels = labels

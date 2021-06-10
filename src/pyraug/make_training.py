@@ -7,17 +7,18 @@ from typing import Tuple
 
 import torch
 
-from pyraug.config import ModelConfig, TrainingConfig
-from pyraug.models.vae_models import RHVAE
+from pyraug.trainers.training_config import TrainingConfig
+from pyraug.models.model_utils import ModelConfig
+from pyraug.models.base_vae import BaseVAE
 
 
 def train_vae(
     epoch: int,
     training_config: TrainingConfig,
-    model: RHVAE,
+    model: BaseVAE,
     train_loader: torch.utils.data.DataLoader,
     optimizer: torch.optim.Optimizer,
-) -> Tuple[RHVAE, float]:
+) -> Tuple[BaseVAE, float]:
     train_loss = 0
 
     # Set model on training mode
@@ -55,7 +56,7 @@ def training_loops(
     model_config: ModelConfig,
     training_config: TrainingConfig,
     train_loader: torch.utils.data.DataLoader,
-    model: RHVAE,
+    model: BaseVAE,
     optimizer: torch.optim.Adam,
     dir_path: str = None,
     verbose: bool = False,

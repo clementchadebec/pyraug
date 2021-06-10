@@ -30,5 +30,5 @@ class MetricOutputError(Exception):
     pass
 
 
-class BadInheritance(Exception):
+class BadInheritanceError(Exception):
     pass
