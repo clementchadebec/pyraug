@@ -76,8 +76,8 @@ class RHVAE(BaseVAE):
         self.M = []
         self.centroids = []
 
-        self.M_tens = torch.zeros(1)
-        self.centroids_tens = torch.zeros(1)
+        self.M_tens = torch.randn(1, self.model_config.latent_dim, self.model_config.latent_dim)
+        self.centroids_tens = torch.randn(1, self.model_config.latent_dim)
 
         # define a starting metric (gamma_i = 0 & L = I_d)
         def G(z):

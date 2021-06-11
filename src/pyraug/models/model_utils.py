@@ -1,24 +1,6 @@
 from collections import OrderedDict
 import typing
 from typing import Tuple, Any
-from pyraug.config import BaseConfig
-
-from pydantic.dataclasses import dataclass
-
-@dataclass
-class ModelConfig(BaseConfig):
-    """This is the base configuration instance of the models
-    
-    Parameters:
-        input_dim (int): The input_data dimension
-        latent_dim (int): The latent space dimension. Default: None.
-        default_encoder (bool): Whether the encoder default. Default: True.
-        default_encoder (bool): Whether the encoder default. Default: True."""
-
-    input_dim: int = None
-    latent_dim: int = 10
-    uses_default_encoder: bool = True
-    uses_default_decoder: bool = True
 
 
 class ModelOuput(OrderedDict):

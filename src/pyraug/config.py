@@ -40,7 +40,9 @@ class BaseConfig:
                     return config_dict
 
                 except (TypeError, json.JSONDecodeError) as e:
-                    raise TypeError(f"File {json_path} not loadable. Maybe not json ?")
+                    raise TypeError(f"File {json_path} not loadable. Maybe not json ? \n"
+                        f"Catch Exception {type(e)} with message: " + str(e)
+                    ) from e
 
         except FileNotFoundError:
             raise FileNotFoundError(

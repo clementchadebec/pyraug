@@ -1,5 +1,3 @@
-import dataclasses
-import json
 import os
 import typing
 from typing import Optional, Dict
@@ -12,7 +10,8 @@ import torch.nn as nn
 
 from pyraug.models.nn import Base_Encoder, Base_Decoder
 from pyraug.customexception import BadInheritanceError
-from pyraug.models.model_utils import ModelOuput, ModelConfig
+from pyraug.models.model_utils import ModelOuput
+from pyraug.models.model_config import ModelConfig
 
 from pyraug.models.nn.default_architectures import Encoder_MLP, Decoder_MLP
 

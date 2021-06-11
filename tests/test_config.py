@@ -6,11 +6,13 @@ from pydantic import ValidationError
 
 from pyraug.config import BaseConfig
 
-from pyraug.models.model_utils import ModelConfig
+from pyraug.models.model_config import ModelConfig
 
-from pyraug.models.rhvae.rhvae_config import RHVAEConfig, RHVAEGenerationConfig
+from pyraug.models.rhvae.rhvae_config import RHVAEConfig, RHVAESamplerConfig
 from pyraug.trainers.training_config import TrainingConfig
 
+
+PATH = os.path.dirname(os.path.abspath(__file__))
 
 # RHVAE loading tests
 class Test_Save_Model_JSON_from_Config:
@@ -60,9 +62,9 @@ class Test_Save_Model_JSON_from_Config:
 class Test_Load_RHVAE_Config_From_JSON:
     @pytest.fixture(
         params=[
-            "tests/data/rhvae/configs/model_config00.json",
-            "tests/data/rhvae/configs/training_config00.json",
-            "tests/data/rhvae/configs/generation_config00.json",
+            os.path.join(PATH, "data/rhvae/configs/model_config00.json"),
+            os.path.join(PATH, "data/rhvae/configs/training_config00.json"),
+            os.path.join(PATH, "data/rhvae/configs/generation_config00.json"),
         ]
     )
     def custom_config_path(self, request):
@@ -74,12 +76,12 @@ class Test_Load_RHVAE_Config_From_JSON:
 
     @pytest.fixture
     def not_json_config_path(self):
-        return "tests/data/rhvae/configs/not_json_file.md"
+        return os.path.join(PATH, "data/rhvae/configs/not_json_file.md")
 
     @pytest.fixture(
         params=[
             [
-                "tests/data/rhvae/configs/model_config00.json",
+                os.path.join(PATH, "data/rhvae/configs/model_config00.json"),
                 RHVAEConfig(
                     latent_dim=11,
                     n_lf=2,
@@ -90,7 +92,7 @@ class Test_Load_RHVAE_Config_From_JSON:
                 ),
             ],
             [
-                "tests/data/rhvae/configs/training_config00.json",
+                os.path.join(PATH, "data/rhvae/configs/training_config00.json"),
                 TrainingConfig(
                     batch_size=3,
                     max_epochs=2,
@@ -99,13 +101,12 @@ class Test_Load_RHVAE_Config_From_JSON:
                 ),
             ],
             [
-                "tests/data/rhvae/configs/generation_config00.json",
-                RHVAEGenerationConfig(
+                os.path.join(PATH, "data/rhvae/configs/generation_config00.json"),
+                RHVAESamplerConfig(
                     batch_size=3,
                     mcmc_steps_nbr=3,
                     n_lf=2,
                     eps_lf=0.003,
-                    random_start=False,
                 ),
             ],
         ]
@@ -119,14 +120,14 @@ class Test_Load_RHVAE_Config_From_JSON:
         config_path = custom_config_path_with_true_config[0]
         true_config = custom_config_path_with_true_config[1]
 
-        if config_path == "tests/data/rhvae/configs/model_config00.json":
+        if config_path == os.path.join(PATH, "data/rhvae/configs/model_config00.json"):
             parsed_config = RHVAEConfig.from_json_file(config_path)
 
-        elif config_path == "tests/data/rhvae/configs/training_config00.json":
+        elif config_path == os.path.join(PATH, "data/rhvae/configs/training_config00.json"):
             parsed_config = TrainingConfig.from_json_file(config_path)
 
         else:
-            parsed_config = RHVAEGenerationConfig.from_json_file(config_path)
+            parsed_config = RHVAESamplerConfig.from_json_file(config_path)
 
         assert parsed_config == true_config
 
@@ -160,7 +161,7 @@ class Test_Load_Config_From_Dict:
 
         else:
             with pytest.raises(TypeError):
-                RHVAEGenerationConfig.from_dict(corrupted_keys_dict_config)
+                RHVAESamplerConfig.from_dict(corrupted_keys_dict_config)
 
 
     @pytest.fixture(
@@ -185,4 +186,4 @@ class Test_Load_Config_From_Dict:
 
         else:
             with pytest.raises(ValidationError):
-                RHVAEGenerationConfig.from_dict(corrupted_type_dict_config)
+                RHVAESamplerConfig.from_dict(corrupted_type_dict_config)

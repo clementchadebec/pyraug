@@ -12,8 +12,8 @@ class Encoder_MLP(Base_Encoder):
 
         if args.input_dim is None:
             raise AttributeError("No input dimension provided !"
-            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where"
-            "the shape of the data is [mini_batch x data_shape]. Unable to build encoder" 
+            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where "
+            "the shape of the data is [mini_batch x data_shape]. Unable to build encoder " 
             "automatically")
 
         self.input_dim = args.input_dim
@@ -34,7 +34,7 @@ class Decoder_MLP(Base_Decoder):
 
         if args.input_dim is None:
             raise AttributeError("No input dimension provided !"
-            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where"
+            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where "
             "the shape of the data is [mini_batch x data_shape]. Unable to build decoder" 
             "automatically")
 
@@ -55,8 +55,8 @@ class Metric_MLP(Base_Metric):
 
         if args.input_dim is None:
             raise AttributeError("No input dimension provided !"
-            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where"
-            "the shape of the data is [mini_batch x data_shape]. Unable to build metric" 
+            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where "
+            "the shape of the data is [mini_batch x data_shape]. Unable to build metric " 
             "automatically")
 
         self.input_dim = args.input_dim

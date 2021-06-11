@@ -1,0 +1,41 @@
+import typing
+from pyraug.config import BaseConfig
+
+from pydantic.dataclasses import dataclass
+
+@dataclass
+class ModelConfig(BaseConfig):
+    """This is the base configuration instance of the models
+    
+    Parameters:
+        input_dim (int): The input_data dimension
+        latent_dim (int): The latent space dimension. Default: None.
+        default_encoder (bool): Whether the encoder default. Default: True.
+        default_encoder (bool): Whether the encoder default. Default: True."""
+
+    input_dim: int = None
+    latent_dim: int = 10
+    uses_default_encoder: bool = True
+    uses_default_decoder: bool = True
+
+
+@dataclass
+class SamplerConfig(BaseConfig):
+    """
+    This is the base configuration of a model sampler
+
+    Parameters:
+        samples_number (int): The number of samples to generate
+        batch_size (int): The number of samples to generate in each batch
+        samples_per_save (int): The number of samples to be saved together.
+            By default, when generating, the generated data is saved in ``.pt`` format 
+            in several files. This specifies the number of samples to be saved in these
+            files. Amend this argument if you deal with particularly large data. Default: 500.  
+
+        no_cuda (bool): Disable `cuda`. Default: False
+    """
+    output_dir: str = None
+    samples_number: int = 1
+    batch_size: int = 50
+    samples_per_save: int = 500
+    no_cuda: bool = False

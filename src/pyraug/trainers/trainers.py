@@ -1,17 +1,11 @@
-import dataclasses
-import json
-import logging
-import datetime
+
 import os
 import typing
-from abc import ABC, abstractmethod
 from typing import Any, Optional, Tuple, Union, Dict, Any
 import logging
 from copy import deepcopy
 
-import dill
 import torch
-import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
@@ -20,13 +14,11 @@ from pyraug.customexception import *
 
 
 
-from pyraug.make_training import training_loops
-
-
 from torch.utils.data import Dataset
 from pyraug.models import BaseVAE
 from pyraug.trainers.trainer_utils import set_seed
 from pyraug.trainers.training_config import TrainingConfig
+from pyraug.customexception import ModelError
 
 
 
@@ -148,7 +140,19 @@ class Trainer:
 
         return optimizer
 
+    def _run_model_sanity_check(self, model, train_dataset):
+        try:
+            model(train_dataset[:2])
 
+        except Exception as e:
+            raise ModelError("Error when calling forward method from model. Potential issues: \n"
+                " - Wrong model architecture -> check encoder, decoder and metric architecture if "
+                "you provide yours \n"
+                " - The data input dimension provided is wrong -> when no encoder, decoder or metric "
+                "provided, a network is built automatically but requires the shape of the flatten " 
+                "input data.\n"
+                f"Exception raised: {type(e)} with message: " + str(e)) from e
+#
     def _set_earlystopping_flags(self, train_dataset, eval_dataset, training_config):
 
         # Initialize early_stopping flags
@@ -190,6 +194,9 @@ class Trainer:
         Args:
             log_output_dir (str): The path in which the log will be stored
         """
+
+        # run sanity check on the model
+        self._run_model_sanity_check(self.model, self.train_dataset)
 
         log_verbose = False
 

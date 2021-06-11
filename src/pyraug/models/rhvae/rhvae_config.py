@@ -1,4 +1,5 @@
-from pyraug.models.model_utils import ModelConfig
+from pyraug.models.model_config import ModelConfig
+from pyraug.models.model_config import SamplerConfig
 from pyraug.config import BaseConfig
 
 from pydantic.dataclasses import dataclass
@@ -32,9 +33,8 @@ class RHVAEConfig(ModelConfig):
 
 
 @dataclass
-class RHVAEGenerationConfig(BaseConfig):
-    """RHVAEGenerationConfig is the class where the generation arguments to genrate new 
-    data with a RHVAE are stored.
+class RHVAESamplerConfig(SamplerConfig):
+    """HMCSampler config class containing the main parameters of the sampler.
 
     Parameters:
         num_samples (int): The number of samples to generate. Default: 1
@@ -44,19 +44,12 @@ class RHVAEGenerationConfig(BaseConfig):
             Default: 100
         n_lf (int): The number of leapfrog to use in the integrator of the HMC sampler. 
             Default: 15
-        eps_lf (float): The leapfrog stepsize in the integrator of the HMC sampler. Default: 3e-2.__abs__()
+        eps_lf (float): The leapfrog stepsize in the integrator of the HMC sampler. Default: 3e-2
         random_start (bool): Initialization of the latent space sampler. If False, the sampler
             starts the Markov chain on the metric centroids. If True , a random start is applied.
             Default: False
     """
-    num_samples: int = 1
-    batch_size: int = 50
-    # use_classic_gen: bool = None
-    # generation_type: str = None
     mcmc_steps_nbr: int = 100
     n_lf: int = 15
-    eps_lf: int = 0.03
-    verbose: bool = False
-    random_start: bool = False
-    #no_cuda: bool = False
-    #device: str = "cuda" if torch.cuda.is_available() and not no_cuda else "cpu"
+    eps_lf: float = 0.03
+    beta_zero: float = 1.

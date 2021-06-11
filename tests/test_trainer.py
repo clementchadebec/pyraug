@@ -3,7 +3,7 @@ import torch
 import os
 from copy import deepcopy
 
-from pyraug.models.model_utils import ModelConfig
+from pyraug.models.model_config import ModelConfig
 from pyraug.models.base_vae import BaseVAE
 
 from pyraug.trainers.trainers import Trainer
@@ -12,7 +12,8 @@ from pyraug.models import RHVAE
 from pyraug.models.rhvae.rhvae_config import RHVAEConfig
 
 from torch.optim import RMSprop, SGD, Adadelta, Adagrad, Adam
-from tests.data.rhvae.custom_architectures import Encoder_MLP_Custom, Decoder_MLP_Custom, Metric_MLP_Custom
+from tests.data.rhvae.custom_architectures import *
+from pyraug.customexception import ModelError
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,7 +36,9 @@ class Test_DataLoader:
         TrainingConfig(batch_size=10)
     ])
     def training_config_batch_size(self, request, tmpdir):
-        request.param.output_dir =  tmpdir.mkdir("dummy_folder") # this avoids creating a permanent folder 
+        tmpdir.mkdir('dummy_folder')
+        dir_path = os.path.join(tmpdir, "dummy_folder")
+        request.param.output_dir =  dir_path # this avoids creating a permanent folder 
         return request.param
 
     def test_build_train_data_loader(self, model_sample, train_dataset, training_config_batch_size):
@@ -77,7 +80,9 @@ class Test_Set_Training_config:
         )
     ])
     def training_configs(self, request, tmpdir):
-        request.param.output_dir =  tmpdir.mkdir("dummy_folder")
+        tmpdir.mkdir('dummy_folder')
+        dir_path = os.path.join(tmpdir, "dummy_folder")
+        request.param.output_dir =  dir_path
         return request.param
 
     def test_set_training_config(self, model_sample, train_dataset, training_configs):
@@ -176,7 +181,9 @@ class Test_Init_EarlyStopping_Flags:
         )
     ])
     def training_config_early_stopping(self, request, tmpdir):
-        request.param[0].output_dir =  tmpdir.mkdir("dummy_folder")
+        tmpdir.mkdir('dummy_folder')
+        dir_path = os.path.join(tmpdir, "dummy_folder")
+        request.param[0].output_dir =  dir_path
         return request.param
 
     def test_set_early_stopping_flags(
@@ -222,6 +229,86 @@ class Test_Device_Checks:
     ####### TO BE IMPLEMENTED ########
     pass
 
+class Test_Sanity_Checks:
+    @pytest.fixture
+    def rhvae_config(self):
+        return RHVAEConfig(input_dim=784)    
+
+
+    @pytest.fixture(params=[
+        DecoderWrongInputDim,
+        DecoderWrongOutput,
+        DecoderWrongOutputDim
+    ])
+    def corrupted_decoder(self, rhvae_config, request):
+        return request.param(rhvae_config)
+
+    @pytest.fixture(params=[
+        EncoderWrongInputDim,
+        EncoderWrongOutput,
+        EncoderWrongOutputDim
+    ])
+    def corrupted_encoder(self, rhvae_config, request):
+        return request.param(rhvae_config)
+
+    @pytest.fixture(params=[
+        MetricWrongInputDim,
+        MetricWrongOutput,
+        MetricWrongOutputDim,
+        MetricWrongOutputDimBis
+    ])
+    def corrupted_metric(self, rhvae_config, request):
+        return request.param(rhvae_config)
+
+    @pytest.fixture(params=[
+        torch.rand(1),
+        torch.rand(1),
+        torch.rand(1)
+    ])
+    def rhvae_sample(self, rhvae_config, corrupted_encoder, corrupted_decoder, corrupted_metric, request):
+        # randomized
+        
+        alpha = request.param
+
+        if alpha < 0.125:
+            rhvae_config.input_dim = rhvae_config.input_dim - 1 # create error on input dim
+            model = RHVAE(rhvae_config)
+
+        elif 0.125 <= alpha < 0.25:
+            model = RHVAE(rhvae_config, encoder=corrupted_encoder)
+
+        elif 0.25 <= alpha < 0.375:
+            model = RHVAE(rhvae_config, decoder=corrupted_decoder)
+
+        elif 0.375 <= alpha < 0.5:
+            model = RHVAE(rhvae_config, metric=corrupted_metric)
+
+        elif 0.5 <= alpha < 0.625:
+            model = RHVAE(rhvae_config, encoder=corrupted_encoder, decoder=corrupted_decoder)
+
+        elif 0.625 <= alpha < 0:
+            model = RHVAE(rhvae_config, encoder=corrupted_encoder, metric=corrupted_metric)
+
+        elif 0.750 <= alpha < 0.875:
+            model = RHVAE(rhvae_config, decoder=corrupted_decoder, metric=corrupted_metric)
+
+        else:
+            model = RHVAE(rhvae_config, encoder=corrupted_encoder, decoder=corrupted_decoder,
+                metric=corrupted_metric)
+
+        return model
+
+
+    def test_raises_sanity_check_error(self, rhvae_sample, train_dataset):
+        trainer = Trainer(
+            model=rhvae_sample,
+            train_dataset=train_dataset
+        )
+
+        with pytest.raises(ModelError):
+            trainer._run_model_sanity_check(rhvae_sample, train_dataset)
+
+
 class Test_RHVAE_Training:
 
     @pytest.fixture(params=[
@@ -258,6 +345,7 @@ class Test_RHVAE_Training:
     @pytest.fixture
     def custom_metric(self, rhvae_config):
         return Metric_MLP_Custom(rhvae_config)
+
 
 
     @pytest.fixture(params=[

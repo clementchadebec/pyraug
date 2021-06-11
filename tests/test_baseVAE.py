@@ -3,7 +3,7 @@ import os
 import torch
 
 from pyraug.models.base_vae import BaseVAE
-from pyraug.models.model_utils import ModelConfig
+from pyraug.models.model_config import ModelConfig
 
 from pyraug.customexception import BadInheritanceError
 from tests.data.rhvae.custom_architectures import Decoder_Conv, Encoder_Conv, NetBadInheritance

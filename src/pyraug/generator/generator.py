@@ -1,21 +1,12 @@
-import dataclasses
-import json
-import logging
-import os
-
 import torch
+import typing
 
-from pyraug.models import RHVAE
-from pyraug.config import GenerationConfig, ModelConfig
-from pyraug.config_loader import ConfigParserFromJSON
-from pyraug.models.vae_models import RHVAE
-from pyraug.sampler import hmc_manifold_sampling
-
+from pyraug.models import BaseVAE
 
 class Generator:
     def __init__(
         self,
-        model: ,
+        model: BaseVAE,
         generation_args:
         sampler
         )
@@ -27,7 +18,7 @@ class Generator:
         self.generation_config = generation_config
 
         # if torch.cuda.is_available():
-        #    self.generation_config.device = "cuda"
+        # :   self.generation_config.device = "cuda"
 
     #
     # else:
