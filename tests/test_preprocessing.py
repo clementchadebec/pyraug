@@ -2,7 +2,7 @@ import pytest
 import torch
 import os
 import numpy as np
-from pyraug.data.preprocessors import DataProcessor, ImageProcessor
+from pyraug.data.preprocessors import DataProcessor
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -36,7 +36,7 @@ class Test_Format_Data:
         assert DataProcessor.has_nan(nan_data)
 
 
-class Test_Apply_Img_Transforms:
+class Test_Apply_Transforms:
 
     @pytest.fixture(
     params=[
@@ -50,7 +50,7 @@ class Test_Apply_Img_Transforms:
         return request.param
 
     def test_normalize_data(self, unormalized_data):
-        checked_data = ImageProcessor.check_data(unormalized_data[0])
+        checked_data = DataProcessor.process_data(unormalized_data[0])
         assert (
             bool(all([c_data.min() >= 0 for c_data in checked_data])) 
             and bool(all([c_data.max() <= 1 for c_data in checked_data])))
@@ -58,7 +58,7 @@ class Test_Apply_Img_Transforms:
 
     def test_data_shape(self, unormalized_data):
         
-        checked_data = ImageProcessor.check_data(unormalized_data[0])
+        checked_data = DataProcessor._process_data_list(unormalized_data[0])
         #assert 0, f"{checked_data}"
         assert (
             checked_data.shape
@@ -77,7 +77,7 @@ class Test_Apply_Img_Transforms:
         target_shape = data_to_reshape[1]
         target_output_shape = data_to_reshape[2]
 
-        reshaped_data = ImageProcessor._reshape_img(data, target_shape)
+        reshaped_data = DataProcessor._reshape_data(data, target_shape)
         
         assert reshaped_data.shape == target_output_shape
 
@@ -100,14 +100,34 @@ class Test_Apply_Img_Transforms:
                 ],
                 (5, 1, 10, 10, 10)
             ]
+            ,
+            [
+                torch.randn(4, 12, 10),
+                (4, 12, 10)
+            ],
+            [
+                np.random.randn(10, 2, 17, 28),
+                (10, 2, 17, 28)
+            ]
         ])
     def messy_data(self, request):
         return request.param
 
     def test_transforms_messy_data(self, messy_data):
-        checked_data = ImageProcessor.check_data(messy_data[0])
+        checked_data = DataProcessor.process_data(messy_data[0])
 
         assert checked_data.shape == messy_data[1]
         assert (
             bool(all([c_data.min() >= 0 for c_data in checked_data])) 
             and bool(all([c_data.max() <= 1 for c_data in checked_data])))
+
+
+    def test_create_dataset(self, messy_data):
+
+        labels = torch.rand(messy_data[1][0]) 
+
+        checked_data = DataProcessor.process_data(messy_data[0])
+        dataset = DataProcessor.to_dataset(checked_data, labels)
+
+        assert torch.equal(dataset.data, checked_data)
+        assert torch.equal(dataset.labels, labels)

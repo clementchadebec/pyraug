@@ -29,37 +29,26 @@ class BaseSampler:
 
         if not os.path.exists(sampler_config.output_dir):
             os.makedirs(sampler_config.output_dir)
-            logger.info(f"Created {sampler_config.output_dir} folder since did not exist. "
-                "Generated data will be saved here.")
+            logger.info(f"Created {sampler_config.output_dir} folder since did not exist. ")
         
         self.model = model
         self.sampler_config = sampler_config
 
-        self.samples_number = sampler_config.samples_number
         self.batch_size = sampler_config.batch_size
         self.samples_per_save = self.sampler_config.samples_per_save
 
         self.device = "cuda" if torch.cuda.is_available() and not sampler_config.no_cuda else 'cpu'
 
-        full_batch_nbr = int(self.sampler_config.samples_number / self.sampler_config.batch_size)
-        last_batch_samples_nbr = self.sampler_config.samples_number % self.sampler_config.batch_size
 
-        if last_batch_samples_nbr == 0:
-            batch_number = full_batch_nbr
 
-        else:
-            batch_number = full_batch_nbr + 1
-        
-        self.batch_number = batch_number
-        self.full_batch_nbr = full_batch_nbr
-        self.last_batch_samples_nbr= last_batch_samples_nbr
+    def sample(self, num_samples):
+        """Main sampling function of the samplers. The data is saved in the 
+        ``output_dir/generation_``
+        folder passed in the `~pyraug.models.model_config.SamplerConfig` instance. If ``output_dir``
+        if None, a folder named ``dummy_output_dir`` is created in this folder.
 
-    def sample(self):
-        """Main sampling function of the samplers
-
-        Retruns:
-            (torch.Tensor): The generated data
-
+        Args:
+            num_samples (int): The number of samples to generate
         """
         raise not NotImplementedError()
 

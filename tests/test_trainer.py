@@ -27,6 +27,13 @@ def train_dataset():
 def model_sample():
     return BaseVAE(ModelConfig(input_dim=784))
 
+@pytest.fixture
+def training_config(tmpdir):
+    tmpdir.mkdir('dummy_folder')
+    dir_path = os.path.join(tmpdir, "dummy_folder")
+    return TrainingConfig(output_dir=dir_path)
+
+
 
 class Test_DataLoader:
 
@@ -299,10 +306,11 @@ class Test_Sanity_Checks:
         return model
 
 
-    def test_raises_sanity_check_error(self, rhvae_sample, train_dataset):
+    def test_raises_sanity_check_error(self, rhvae_sample, train_dataset, training_config):
         trainer = Trainer(
             model=rhvae_sample,
-            train_dataset=train_dataset
+            train_dataset=train_dataset,
+            training_config=training_config
         )
 
         with pytest.raises(ModelError):
@@ -326,8 +334,7 @@ class Test_RHVAE_Training:
         RHVAEConfig(input_dim=784),
         RHVAEConfig(
             input_dim=784,
-            latent_dim=5),
-        
+            latent_dim=5)
     ])
     def rhvae_config(self, request):
         return request.param
@@ -588,7 +595,7 @@ class Test_RHVAE_Saving:
         model = deepcopy(trainer.model)
         optimizer = deepcopy(trainer.optimizer)
 
-        trainer.save_checkpoint(epoch=0)
+        trainer.save_checkpoint(dir_path=dir_path, epoch=0)
 
         checkpoint_dir = os.path.join(dir_path, "checkpoint_epoch_0")
 
@@ -620,15 +627,33 @@ class Test_RHVAE_Saving:
         else:
             assert not 'metric.pkl' in files_list
 
+
         model_rec_state_dict = torch.load(os.path.join(checkpoint_dir, 'model.pt'))['model_state_dict']
         
-
         assert all([
             torch.equal(
                 model_rec_state_dict[key],
                 model.state_dict()[key])
                 for key in model.state_dict().keys()
         ])
+
+        # check reload full model
+        model_rec = RHVAE.load_from_folder(os.path.join(checkpoint_dir))
+
+        assert all([
+            torch.equal(
+                model_rec.state_dict()[key],
+                model.state_dict()[key])
+                for key in model.state_dict().keys()
+        ])
+
+        assert torch.equal(model_rec.M_tens, model.M_tens)
+        assert torch.equal(model_rec.centroids_tens, model.centroids_tens)
+        assert type(model_rec.encoder) == type(model.encoder)
+        assert type(model_rec.decoder) == type(model.decoder)
+        assert type(model_rec.metric) == type(model.metric)
+
+
 
         optim_rec_state_dict = torch.load(os.path.join(checkpoint_dir, 'optimizer.pt'))
 
@@ -643,6 +668,7 @@ class Test_RHVAE_Saving:
                 optim_rec_state_dict['state'], optimizer.state_dict()['state']
             )
         ])
+
 
     def test_checkpoint_saving_during_training(self, tmpdir, rhvae_sample, train_dataset, training_configs, optimizers):
 #
@@ -662,7 +688,11 @@ class Test_RHVAE_Saving:
 
         trainer.train()
 
-        checkpoint_dir = os.path.join(dir_path, f"checkpoint_epoch_{target_saving_epoch}")
+
+        training_dir = os.path.join(dir_path, f"training_{trainer._training_signature}")
+        assert training_dir
+
+        checkpoint_dir = os.path.join(training_dir, f"checkpoint_epoch_{target_saving_epoch}")
 
         assert os.path.isdir(checkpoint_dir)
         
@@ -702,6 +732,7 @@ class Test_RHVAE_Saving:
                 for key in model.state_dict().keys()
         ])
 
+
     def test_final_model_saving(
         self, tmpdir, rhvae_sample, train_dataset, training_configs, optimizers):
 
@@ -716,8 +747,12 @@ class Test_RHVAE_Saving:
 
         trainer.train()
 
-        final_dir =  os.path.join(dir_path, f"final_model")
+        model = deepcopy(trainer.model)
 
+        training_dir = os.path.join(dir_path, f"training_{trainer._training_signature}")
+        assert training_dir
+
+        final_dir =  os.path.join(training_dir, f"final_model")
         assert os.path.isdir(final_dir)
         
         files_list = os.listdir(final_dir)
@@ -745,6 +780,23 @@ class Test_RHVAE_Saving:
 
         else:
             assert not 'metric.pkl' in files_list
+
+
+        # check reload full model
+        model_rec = RHVAE.load_from_folder(os.path.join(final_dir))
+
+        assert all([
+            torch.equal(
+                model_rec.state_dict()[key],
+                model.state_dict()[key])
+                for key in model.state_dict().keys()
+        ])
+
+        assert torch.equal(model_rec.M_tens, model.M_tens)
+        assert torch.equal(model_rec.centroids_tens, model.centroids_tens)
+        assert type(model_rec.encoder) == type(model.encoder)
+        assert type(model_rec.decoder) == type(model.decoder)
+        assert type(model_rec.metric) == type(model.metric)
 
 
 class Test_Logging:

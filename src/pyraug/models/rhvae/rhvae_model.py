@@ -342,7 +342,8 @@ class RHVAE(BaseVAE):
 
                 or 
                 - a ``model_config.json``, a ``model.pt`` and a ``encoder.pkl`` (resp. 
-                ``decoder.pkl``) if a custom encoder (resp. decoder) was provided
+                ``decoder.pkl`` or/and ``metric.pkl``) if a custom encoder (resp. decoder or/and
+                metric) was provided
         """
 
         model_config = cls._load_model_config_from_folder(dir_path)

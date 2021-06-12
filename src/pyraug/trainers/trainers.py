@@ -4,6 +4,7 @@ import typing
 from typing import Any, Optional, Tuple, Union, Dict, Any
 import logging
 from copy import deepcopy
+import datetime
 
 import torch
 import torch.optim as optim
@@ -45,7 +46,6 @@ class Trainer:
         model: BaseVAE,
         train_dataset: Dataset,
         eval_dataset: Optional[Dataset]=None,
-        test_dataset: Optional[Dataset]= None,
         training_config: Optional[TrainingConfig] = None,
         optimizer: Optional[torch.optim.Optimizer] = None
     ):
@@ -59,8 +59,7 @@ class Trainer:
 
         if not os.path.exists(training_config.output_dir):
             os.makedirs(training_config.output_dir)
-            logger.info(f"Created {training_config.output_dir} folder since did not exist. Models "
-                "and checkpoints will be saved here.")
+            logger.info(f"Created {training_config.output_dir} folder since did not exist.")
 
             
 
@@ -81,7 +80,6 @@ class Trainer:
 
         self.train_dataset = train_dataset
         self.eval_dataset = eval_dataset
-        self.test_dataset = test_dataset
 
         self.model = model
         self.optimizer = optimizer
@@ -100,15 +98,9 @@ class Trainer:
         else:
             eval_loader = None
 
-        if test_dataset is not None:
-            test_loader = self.get_eval_dataloader(test_dataset)
-
-        else:
-            test_loader = None
 
         self.train_loader = train_loader
         self.eval_loader = eval_loader
-        self.test_loader = test_loader
 
     
     def get_train_dataloader(
@@ -198,6 +190,18 @@ class Trainer:
         # run sanity check on the model
         self._run_model_sanity_check(self.model, self.train_dataset)
 
+        self._training_signature = str(
+            datetime.datetime.now())[0:19].replace(" ", "_").replace(":", "-")
+
+        training_dir = os.path.join(
+            self.training_config.output_dir, f"training_{self._training_signature}"
+        )
+
+        if not os.path.exists(training_dir):
+            os.makedirs(training_dir)
+            logger.info(f"Created {training_dir}."
+                "Training config, checkpoints and final model will be saved here.")
+
         log_verbose = False
 
         # set up log file
@@ -248,7 +252,7 @@ class Trainer:
                 else:
                     epoch_es_eval += 1
 
-                    if epoch_es_eval > self.training_config.eval_early_stopping:
+                    if epoch_es_eval > self.training_config.eval_early_stopping and log_verbose:
                         logger.info(f"Training ended at epoch {epoch}! "
                             f" Eval loss did not improve for {epoch_es_eval} epochs.")
                         file_logger.info(f"Training ended at epoch {epoch}! "
@@ -265,7 +269,7 @@ class Trainer:
                 else:
                     epoch_es_train += 1
 
-                    if epoch_es_train > self.training_config.train_early_stopping:
+                    if epoch_es_train > self.training_config.train_early_stopping and log_verbose:
                         logger.info(f"Training ended at epoch {epoch}! "
                             f" Train loss did not improve for {epoch_es_train} epochs.")
                         file_logger.info(f"Training ended at epoch {epoch}! "
@@ -275,7 +279,7 @@ class Trainer:
                 
             # save checkpoints
             if epoch % self.training_config.steps_saving == 0:
-                self.save_checkpoint(epoch=epoch)
+                self.save_checkpoint(dir_path=training_dir, epoch=epoch)
 
             if log_verbose and epoch % 1 == 0:
                 file_logger.info(self.make_eval_early_stopping)
@@ -318,7 +322,7 @@ class Trainer:
                             f"- Current Train loss: {epoch_train_loss:.2f}\n"
                         )
 
-        final_dir = os.path.join(self.training_config.output_dir, 'final_model')
+        final_dir = os.path.join(training_dir, 'final_model')
 
         self.save_model(dir_path=final_dir)
         logger.info("----------------------------------")
@@ -404,13 +408,14 @@ class Trainer:
         self.training_config.save_json(dir_path, "training_config")
 
 
-    def save_checkpoint(self, epoch: int):
+    def save_checkpoint(self, dir_path, epoch: int):
         """Saves a checkpoint alowing to restart training from here
         
         Args:
+            dir_path (str): The folder where the checkpoint should be saved
             epochs_signature (int): The epoch number"""
 
-        checkpoint_dir = os.path.join(self.training_config.output_dir,
+        checkpoint_dir = os.path.join(dir_path,
             f"checkpoint_epoch_{epoch}")
 
         if not os.path.exists(checkpoint_dir):

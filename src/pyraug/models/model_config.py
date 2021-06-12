@@ -35,7 +35,6 @@ class SamplerConfig(BaseConfig):
         no_cuda (bool): Disable `cuda`. Default: False
     """
     output_dir: str = None
-    samples_number: int = 1
     batch_size: int = 50
     samples_per_save: int = 500
     no_cuda: bool = False

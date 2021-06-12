@@ -1,6 +1,7 @@
 import pytest
 import os
 import torch
+import numpy as np
 
 
 from pyraug.models import BaseVAE
@@ -24,10 +25,13 @@ def model_sample():
     return BaseVAE((ModelConfig(input_dim=784)))
 
 @pytest.fixture()
-def sampler_sample(model_sample):
+def sampler_sample(tmpdir, model_sample):
+    tmpdir.mkdir('dummy_folder')
     return BaseSampler(
         model=model_sample,
-        sampler_config=SamplerConfig(batch_size=2))
+        sampler_config=SamplerConfig(
+            output_dir=os.path.join(tmpdir, "dummy_folder"),
+            batch_size=2))
 
 
 class Test_data_saving:
@@ -36,7 +40,6 @@ class Test_data_saving:
 
         sampler = sampler_sample
 
-        tmpdir.mkdir('dummy_folder')
         dir_path = os.path.join(tmpdir, "dummy_folder")
 
         sampler_sample.save_data_batch(dummy_data, dir_path, number_of_samples=3, batch_idx=0)
@@ -52,7 +55,6 @@ class Test_data_saving:
     def test_save_config(self, tmpdir, sampler_sample):
         sampler = sampler_sample
 
-        tmpdir.mkdir('dummy_folder')
         dir_path = os.path.join(tmpdir, "dummy_folder")
 
         sampler.save(dir_path)
@@ -69,66 +71,54 @@ class Test_data_saving:
 class Test_Sampler_Set_up:
 
     @pytest.fixture(params=[
-        (
             SamplerConfig(
-                samples_number=5, 
                 batch_size=1
-            ),
-            (5, 0, 5)
-        ), # (target full batch number, target last full batch size, target_batch_number) 
-        (
+            )
+        , # (target full batch number, target last full batch size, target_batch_number) 
             SamplerConfig(
-                samples_number=5,
                 batch_size=2
-            ),
-            (2, 1, 3)
-        )
+            )
+        
     ])
-    def sampler_config(self, request):
+    def sampler_config(self, tmpdir, request):
+        tmpdir.mkdir('dummy_folder')
+        request.param.output_dir = os.path.join(tmpdir, "dummy_folder")
         return request.param
 
     def test_sampler_set_up(self, model_sample, sampler_config):
         sampler = BaseSampler(
             model=model_sample,
-            sampler_config=sampler_config[0])
+            sampler_config=sampler_config)
 
-        assert sampler.full_batch_nbr == sampler_config[1][0]
-        assert sampler.last_batch_samples_nbr == sampler_config[1][1]
-        assert sampler.batch_number == sampler_config[1][2]
 
-        assert sampler.batch_size == sampler_config[0].batch_size
-        assert sampler.samples_per_save == sampler_config[0].samples_per_save
+        assert sampler.batch_size == sampler_config.batch_size
+        assert sampler.samples_per_save == sampler_config.samples_per_save
 
 
 class Test_RHVAE_Sampler:
 
     @pytest.fixture(params=[
         RHVAESamplerConfig(
-            samples_number=5, 
             batch_size=1,
             mcmc_steps_nbr=15,
             samples_per_save=5),
         RHVAESamplerConfig(
-            samples_number=5, 
             batch_size=2,
             mcmc_steps_nbr=15,
             samples_per_save=1),
         RHVAESamplerConfig(
-            samples_number=3, 
             batch_size=3,
             n_lf=1,
             eps_lf=0.01,
             mcmc_steps_nbr=10,
             samples_per_save=5),
         RHVAESamplerConfig(
-            samples_number=1, 
             batch_size=3,
             n_lf=1,
             eps_lf=0.01,
             mcmc_steps_nbr=10,
             samples_per_save=3),
         RHVAESamplerConfig(
-            samples_number=4, 
             batch_size=10,
             n_lf=1,
             eps_lf=0.01,
@@ -138,6 +128,14 @@ class Test_RHVAE_Sampler:
     def rhvae_sampler_config(self, tmpdir, request):
         tmpdir.mkdir('dummy_folder')
         request.param.output_dir = os.path.join(tmpdir, "dummy_folder")
+        return request.param
+
+    @pytest.fixture(params=[
+        np.random.randint(1, 15),
+        np.random.randint(1, 15),
+        np.random.randint(1, 15)
+    ])
+    def samples_number(self, request):
         return request.param
 
     @pytest.fixture(params=[
@@ -179,29 +177,30 @@ class Test_RHVAE_Sampler:
             not torch.equal(out[i], out[j]) for i in range(len(out)) for j in range(i+1, len(out))
         ]) 
 
-    def test_sampling_loop_saving(self, tmpdir, rhvae_sample, rhvae_sampler_config):
+    def test_sampling_loop_saving(self, tmpdir, rhvae_sample, rhvae_sampler_config, samples_number):
 
         
 
         sampler = RHVAESampler(model=rhvae_sample, sampler_config=rhvae_sampler_config)
+        sampler.sample(samples_number=samples_number)
 
-        sampler.sample()
+        generation_folder = os.path.join(tmpdir, "dummy_folder")
+        generation_folder_list = os.listdir(generation_folder)
 
-        data_folder = os.path.join(tmpdir, "dummy_folder")
+        assert f"generation_{sampler._sampling_signature}" in generation_folder_list
 
+        data_folder = os.path.join(generation_folder, f"generation_{sampler._sampling_signature}")
         files_list = os.listdir(data_folder)
 
-        full_data_file_nbr = int(
-            rhvae_sampler_config.samples_number / rhvae_sampler_config.samples_per_save)
-
-        last_file_data_nbr = rhvae_sampler_config.samples_number % rhvae_sampler_config.samples_per_save
+        full_data_file_nbr = int(samples_number / rhvae_sampler_config.samples_per_save)
+        last_file_data_nbr = samples_number % rhvae_sampler_config.samples_per_save
 
         if last_file_data_nbr == 0:
             expected_num_of_data_files = full_data_file_nbr
         else:
             expected_num_of_data_files = full_data_file_nbr + 1
 
-        
+
 
         assert len(files_list) == 1 + expected_num_of_data_files
 
@@ -233,7 +232,7 @@ class Test_RHVAE_Sampler:
 
 
         data_rec = torch.cat(data_rec)
-        assert data_rec.shape[0] == rhvae_sampler_config.samples_number
+        assert data_rec.shape[0] == samples_number
 
 
         # check sampler_config

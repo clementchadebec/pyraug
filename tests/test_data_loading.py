@@ -5,7 +5,7 @@ import os
 
 from pyraug.customexception import LoadError
 
-from pyraug.data.loader import DataGetter
+from pyraug.data.loader import DataGetterFromFolder
 from pyraug.data.datasets import BaseDataset
 
 from nibabel.testing import data_path
@@ -43,7 +43,7 @@ class Test_Data_Loading:
         return request.param
 
     def test_load_in_array(self, demo_data):
-        data = DataGetter.load_image(demo_data)
+        data = DataGetterFromFolder.load_image(demo_data)
         assert type(data) == np.ndarray
 
 class Test_Data_Loading_From_Folder:
@@ -52,7 +52,7 @@ class Test_Data_Loading_From_Folder:
         return os.path.join(PATH, "data/loading/dummy_data_folder")
 
     def test_returns_good_type(self, path_to_dummy_data_folder):
-        data = DataGetter.load_from_folder(path_to_dummy_data_folder)
+        data = DataGetterFromFolder.load(path_to_dummy_data_folder)
         assert type(data) == list
 
 # # data loading

@@ -1,8 +1,13 @@
 import torch
 import os
+import logging
+
 from pyraug.models.base_sampler import BaseSampler
 from pyraug.models.rhvae.rhvae_config import RHVAESamplerConfig
 from pyraug.models import RHVAE
+import datetime
+
+logger = logging.getLogger(__name__)
 
 
 class RHVAESampler(BaseSampler):
@@ -39,14 +44,48 @@ class RHVAESampler(BaseSampler):
 
         
 
-    def sample(self):
+    def sample(self, samples_number):
+        """
+        HMC sampling with a RHVAE.
+
+        The data is saved in the ``output_dir`` (folder passed in the 
+        `~pyraug.models.model_config.SamplerConfig` instance) in a folder named 
+        ``generation_YYYY-MM-DD_hh-mm-ss``. If ``output_dir`` is None, a folder named
+        ``dummy_output_dir`` is created in this folder.
+
+        Args:
+            num_samples (int): The number of samples to generate
+        """
+
+        assert samples_number > 0, f"Provide a number of samples > 0"
+
+        self._sampling_signature = str(
+            datetime.datetime.now())[0:19].replace(" ", "_").replace(":", "-")
+
+        sampling_dir = os.path.join(
+            self.sampler_config.output_dir, f'generation_{self._sampling_signature}')
+
+        if not os.path.exists(sampling_dir):
+            os.makedirs(sampling_dir)
+            logger.info(f"Created {sampling_dir}."
+                "Generated data and sampler config will be saved here.")
+
+
+        full_batch_nbr = int(samples_number / self.sampler_config.batch_size)
+        last_batch_samples_nbr = samples_number % self.sampler_config.batch_size
+
+        if last_batch_samples_nbr == 0:
+            batch_number = full_batch_nbr
+
+        else:
+            batch_number = full_batch_nbr + 1
 
         generated_data = []
     
         file_count = 0
         data_count = 0
 
-        for i in range(self.full_batch_nbr):
+        for i in range(full_batch_nbr):
 
             samples = self.hmc_sampling(self.batch_size)
             x_gen = self.model.decoder(z=samples).detach()
@@ -57,7 +96,7 @@ class RHVAESampler(BaseSampler):
             while data_count >= self.samples_per_save:
                 self.save_data_batch(
                     data=torch.cat(generated_data)[:self.samples_per_save],
-                    dir_path=os.path.join(self.sampler_config.output_dir),
+                    dir_path=sampling_dir,
                     number_of_samples=self.samples_per_save,
                     batch_idx=file_count)
 
@@ -65,17 +104,17 @@ class RHVAESampler(BaseSampler):
                 data_count -= self.samples_per_save
                 generated_data = list(torch.cat(generated_data)[self.samples_per_save:].unsqueeze(0))
 
-        if self.last_batch_samples_nbr > 0:
-            samples = self.hmc_sampling(self.last_batch_samples_nbr)
+        if last_batch_samples_nbr > 0:
+            samples = self.hmc_sampling(last_batch_samples_nbr)
             x_gen = self.model.decoder(z=samples).detach()
             generated_data.append(x_gen)
 
-            data_count+= self.last_batch_samples_nbr
+            data_count+= last_batch_samples_nbr
 
             while data_count >= self.samples_per_save:
                 self.save_data_batch(
                     data=torch.cat(generated_data)[:self.samples_per_save],
-                    dir_path=os.path.join(self.sampler_config.output_dir),
+                    dir_path=sampling_dir,
                     number_of_samples=self.samples_per_save,
                     batch_idx=file_count)
 
@@ -87,11 +126,11 @@ class RHVAESampler(BaseSampler):
         if data_count > 0:
             self.save_data_batch(
                     data=torch.cat(generated_data),
-                    dir_path=os.path.join(self.sampler_config.output_dir),
+                    dir_path=sampling_dir,
                     number_of_samples=data_count,
                     batch_idx=file_count)
 
-        self.save(os.path.join(self.sampler_config.output_dir))
+        self.save(sampling_dir)
 
         
     def hmc_sampling(
