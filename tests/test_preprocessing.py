@@ -4,6 +4,8 @@ import os
 import numpy as np
 from pyraug.data.preprocessors import DataProcessor
 
+from pyraug.data.loader import ImageGetterFromFolder
+
 PATH = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -43,7 +45,8 @@ class Test_Apply_Transforms:
         [[np.array([[10.0, 1]]), np.array([[2, 0.0]]), np.array([[0.0, 1.0]])], (3, 1, 2)],
         [[torch.tensor([[10.0, 1]]), torch.tensor([[2, 0.0]]), torch.tensor([[0.0, 1.0]])], (3, 1, 2)],
         [[torch.tensor([[[10.0, 1], [0.0, 1]]]), torch.tensor([[[2, 0.0], [0.0, 1.0]]])], (2, 1, 2, 2)],
-        [torch.load(os.path.join(PATH, 'data/unnormalized_mnist_data_list_of_array')), (3, 1, 28, 28)]
+        [torch.load(os.path.join(PATH, 'data/unnormalized_mnist_data_list_of_array')), (3, 1, 28, 28)],
+        [ImageGetterFromFolder.load(os.path.join(PATH, 'data/loading/dummy_data_folder')), (6, 1, 12, 12)]
     ]
     )
     def unormalized_data(self, request):

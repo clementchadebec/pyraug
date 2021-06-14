@@ -690,7 +690,7 @@ class Test_RHVAE_Saving:
 
 
         training_dir = os.path.join(dir_path, f"training_{trainer._training_signature}")
-        assert training_dir
+        assert os.path.isdir(training_dir)
 
         checkpoint_dir = os.path.join(training_dir, f"checkpoint_epoch_{target_saving_epoch}")
 
@@ -750,7 +750,7 @@ class Test_RHVAE_Saving:
         model = deepcopy(trainer.model)
 
         training_dir = os.path.join(dir_path, f"training_{trainer._training_signature}")
-        assert training_dir
+        assert os.path.isdir(training_dir)
 
         final_dir =  os.path.join(training_dir, f"final_model")
         assert os.path.isdir(final_dir)

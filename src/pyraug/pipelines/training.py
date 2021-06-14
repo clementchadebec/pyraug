@@ -9,7 +9,7 @@ from pyraug.trainers import Trainer
 from pyraug.customexception import LoadError
 
 
-from pyraug.data.loader import DataGetter
+from pyraug.data.loader import DataGetter, ImageGetterFromFolder
 from pyraug.data.preprocessors import DataProcessor
 from torch.optim import Optimizer
 
@@ -52,8 +52,17 @@ class TrainingPipeline(Pipeline):
 
         if self.data_loader is None:
             if isinstance(train_data, str):
-                raise TypeError("No loader provided. Train data is expected to come as np.ndarray or "
-                    "torch.Tensor")
+                
+                self.data_loader = ImageGetterFromFolder()
+
+                try:
+                    train_data = self.data_loader.load(train_data)
+
+                except Exception as e:
+                    raise LoadError(
+                    f"Unable to load training data. Exception catch: {type(e)} with message: "
+                    + str(e))
+                
 
         else:
             try:
@@ -61,7 +70,7 @@ class TrainingPipeline(Pipeline):
 
             except Exception as e:
                 raise LoadError(
-                    f"Enable to load training data. Exception catch: {type(e)} with message: "
+                    f"Unable to load training data. Exception catch: {type(e)} with message: "
                     + str(e))
 
         train_data = self.data_processor.process_data(train_data)
@@ -71,8 +80,16 @@ class TrainingPipeline(Pipeline):
         if eval_data is not None:
             if self.data_loader is None:
                 if isinstance(eval_data, str):
-                    raise TypeError("No loader provided. Eval data is expected to come as np.ndarray or"
-                        " torch.Tensor")
+
+                    self.data_loader = ImageGetterFromFolder()
+                    
+                    try:
+                        train_data = self.data_loader.load(eval_data)
+
+                    except Exception as e:
+                        raise LoadError(
+                        f"Unable to load training data. Exception catch: {type(e)} with message: "
+                        + str(e))
 
             else:
                 try:
@@ -95,5 +112,7 @@ class TrainingPipeline(Pipeline):
             eval_dataset=eval_dataset,
             training_config=self.training_config,
             optimizer=self.optimizer)
+
+        self.trainer = trainer
 
         trainer.train()

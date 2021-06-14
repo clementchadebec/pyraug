@@ -72,7 +72,7 @@ class Test_Pipeline:
         pipe(samples_number=samples_number)
 
         generation_folder = os.path.join(tmpdir, "dummy_folder")
-        #generation_folder_list = os.listdir(generation_folder)
+        generation_folder_list = os.listdir(generation_folder)
 
         assert f"generation_{sampler._sampling_signature}" in generation_folder_list
 
