@@ -6,13 +6,15 @@ import typing
 from typing import Union
 
 from pyraug.models.model_config import SamplerConfig
+from pyraug.models.rhvae import RHVAESamplerConfig
+from pyraug.models.rhvae.rhvae_sampler import RHVAESampler
 
 class GenerationPipeline(Pipeline):
     """
     This pipelines allows to generate new samples from a pre-trained model
     
     Parameters:
-        model (BaseVAE): The model itself of a path to the model folder
+        model (BaseVAE): The model
         sampler (BaseSampler): The sampler to use to sampler from the model
 
         .. warning::
@@ -22,10 +24,14 @@ class GenerationPipeline(Pipeline):
     def __init__(
         self,
         model: BaseVAE,
-        sampler: BaseSampler):
+        sampler: BaseSampler=None):
     
 
             self.model = model
+
+            if sampler is None:
+                sampler = RHVAESampler(model=model, sampler_config=RHVAESamplerConfig())
+
             self.sampler = sampler
     
     def __call__(self, samples_number):

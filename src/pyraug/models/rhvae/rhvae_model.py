@@ -71,7 +71,7 @@ class RHVAE(BaseVAE):
         self.n_lf = model_config.n_lf
         self.eps_lf = model_config.eps_lf
 
-        # this is used to store the matrices and centroids throughout trainning for
+        # this is used to store the matrices and centroids throughout training for
         # further use in metric update (L is the cholesky decomposition of M)
         self.M = []
         self.centroids = []
@@ -83,28 +83,23 @@ class RHVAE(BaseVAE):
         def G(z):
             return torch.inverse(
                 (
-                torch.eye(self.latent_dim, device=self.device).unsqueeze(0)
+                torch.eye(self.latent_dim, device=z.device).unsqueeze(0)
                 * torch.exp(-torch.norm(z.unsqueeze(1), dim=-1) ** 2)
                 .unsqueeze(-1)
                 .unsqueeze(-1)
-            ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(self.device))
+            ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(z.device))
 
         def G_inv(z):
             return (
-                torch.eye(self.latent_dim, device=self.device).unsqueeze(0)
+                torch.eye(self.latent_dim, device=z.device).unsqueeze(0)
                 * torch.exp(-torch.norm(z.unsqueeze(1), dim=-1) ** 2)
                 .unsqueeze(-1)
                 .unsqueeze(-1)
-            ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(self.device)
+            ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(z.device)
 
         self.G = G
         self.G_inv = G_inv
 
-        # define a N(0, I) distribution
-        self.normal = torch.distributions.MultivariateNormal(
-            loc=torch.zeros(self.latent_dim).to(self.device),
-            covariance_matrix=torch.eye(self.latent_dim).to(self.device),
-        )
 
     def update(self):
         self.update_metric()
@@ -168,7 +163,7 @@ class RHVAE(BaseVAE):
                 )
                 .unsqueeze(-1)
                 .unsqueeze(-1)
-            ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(self.device)
+            ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(x.device)
 
         else:
             G = self.G(z)
@@ -177,7 +172,7 @@ class RHVAE(BaseVAE):
 
         G_log_det = -torch.logdet(G_inv)
 
-        gamma = torch.randn_like(z0, device=self.device)
+        gamma = torch.randn_like(z0, device=x.device)
         rho = gamma / self.beta_zero_sqrt
         beta_sqrt_old = self.beta_zero_sqrt
 
@@ -208,7 +203,7 @@ class RHVAE(BaseVAE):
                     )
                     .unsqueeze(-1)
                     .unsqueeze(-1)
-                ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(self.device)
+                ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(x.device)
 
             else:
                 # compute metric value on new z using final metric
@@ -258,8 +253,8 @@ class RHVAE(BaseVAE):
         model_path = dir_path
 
         model_dict = {
-            "M": deepcopy(self.M_tens),
-            "centroids": deepcopy(self.centroids_tens),
+            "M": deepcopy(self.M_tens.clone().detach()),
+            "centroids": deepcopy(self.centroids_tens.clone().detach()),
             "model_state_dict": deepcopy(self.state_dict()),
         }
 
@@ -311,8 +306,7 @@ class RHVAE(BaseVAE):
         path_to_model_weights = os.path.join(dir_path, "model.pt")
 
        
-
-        model_weights = torch.load(path_to_model_weights)
+        model_weights = torch.load(path_to_model_weights, map_location='cpu')
 
         if 'M' not in model_weights.keys():
             raise KeyError("Metric M matrices are not available in 'model.pt' file. Got keys:"
@@ -461,7 +455,7 @@ class RHVAE(BaseVAE):
                     .unsqueeze(-1)
                     .unsqueeze(-1)
                 ).sum(dim=1)
-                + self.lbd * torch.eye(self.latent_dim).to(self.device)
+                + self.lbd * torch.eye(self.latent_dim).to(z.device)
             )
 
         def G_inv(z):
@@ -476,7 +470,7 @@ class RHVAE(BaseVAE):
                 )
                 .unsqueeze(-1)
                 .unsqueeze(-1)
-            ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(self.device)
+            ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(z.device)
 
         self.G = G
         self.G_inv = G_inv
@@ -500,14 +494,21 @@ class RHVAE(BaseVAE):
                 .squeeze()
                 - 0.5 * G_log_det
             )
-            - torch.log(torch.tensor([2 * np.pi]).to(self.device)) * self.latent_dim / 2
+            - torch.log(torch.tensor([2 * np.pi]).to(x.device)) * self.latent_dim / 2
         )  # log p(\rho_K)
 
         logp = logpxz + logrhoK
 
-        logq = self.normal.log_prob(eps0) - 0.5 * log_var.sum(dim=1)  # log(q(z_0|x))
+        # define a N(0, I) distribution
+        normal = torch.distributions.MultivariateNormal(
+            loc=torch.zeros(self.latent_dim).to(x.device),
+            covariance_matrix=torch.eye(self.latent_dim).to(x.device),
+        )
 
-        return -(logp - logq).sum()
+
+        logq = normal.log_prob(eps0) - 0.5 * log_var.sum(dim=1)  # log(q(z_0|x))
+
+        return -(logp - logq).mean()
 
     def _sample_gauss(self, mu, std):
         # Reparametrization trick
@@ -529,14 +530,20 @@ class RHVAE(BaseVAE):
             p(x|z)     = \prod_i Bernouilli(x_i|pi_{theta}(z_i))
             p(x = s|z) = \prod_i (pi(z_i))^x_i * (1 - pi(z_i)^(1 - x_i))"""
         return -F.binary_cross_entropy(
-            recon_x, x.view(-1, self.input_dim), reduction=reduction
+            recon_x, x.reshape(-1, self.input_dim), reduction=reduction
         ).sum(dim=1)
 
     def _log_z(self, z):
         """
         Return Normal density function as prior on z
         """
-        return self.normal.log_prob(z)
+
+        # define a N(0, I) distribution
+        normal = torch.distributions.MultivariateNormal(
+            loc=torch.zeros(self.latent_dim).to(z.device),
+            covariance_matrix=torch.eye(self.latent_dim).to(z.device),
+        )
+        return normal.log_prob(z)
 
     def _log_p_xz(self, recon_x, x, z):
         """
@@ -552,8 +559,8 @@ class RHVAE(BaseVAE):
         :math:`q_{\phi}(z|x)`
         """
         # print(sample_size)
-        mu, log_var = self.encode(x.view(-1, self.input_dim))
-        Eps = torch.randn(sample_size, x.size()[0], self.latent_dim, device=self.device)
+        mu, log_var = self.encode(x.reshape(-1, self.input_dim))
+        Eps = torch.randn(sample_size, x.size()[0], self.latent_dim, device=x.device)
         Z = (mu + Eps * torch.exp(0.5 * log_var)).reshape(-1, self.latent_dim)
 
         Z0 = Z
@@ -572,7 +579,7 @@ class RHVAE(BaseVAE):
         G_log_det_rep_0 = G_log_det_rep
 
         # initialization
-        gamma = torch.randn_like(Z0, device=self.device)
+        gamma = torch.randn_like(Z0, device=x.device)
         rho = gamma / self.beta_zero_sqrt
         beta_sqrt_old = self.beta_zero_sqrt
 
@@ -626,7 +633,7 @@ class RHVAE(BaseVAE):
                 .squeeze()
                 - 0.5 * G_log_det_rep_0
             )
-            - torch.log(torch.tensor([2 * np.pi]).to(self.device)) * self.latent_dim / 2
+            - torch.log(torch.tensor([2 * np.pi]).to(x.device)) * self.latent_dim / 2
         ).reshape(sample_size, -1)
 
         # log(p(\rho_0))
@@ -642,16 +649,22 @@ class RHVAE(BaseVAE):
                 .squeeze()
                 - 0.5 * G_log_det_rep
             )
-            - torch.log(torch.tensor([2 * np.pi]).to(self.device)) * self.latent_dim / 2
+            - torch.log(torch.tensor([2 * np.pi]).to(x.device)) * self.latent_dim / 2
         ).reshape(sample_size, -1)
         # log(p(\rho_K))
 
-        logqzx = self.normal.log_prob(Eps) - 0.5 * log_var.sum(dim=1)  # log(q(Z_0|X))
+        # define a N(0, I) distribution
+        normal = torch.distributions.MultivariateNormal(
+            loc=torch.zeros(self.latent_dim).to(x.device),
+            covariance_matrix=torch.eye(self.latent_dim).to(x.device),
+        )
+
+        logqzx = normal.log_prob(Eps) - 0.5 * log_var.sum(dim=1)  # log(q(Z_0|X))
 
         logpx = (logpxz + logpz + logrho - logrho0 - logqzx).logsumexp(dim=0).mean(
             dim=0
         ) - torch.log(
-            torch.Tensor([sample_size]).to(self.device)
+            torch.Tensor([sample_size]).to(x.device)
         )  # + self.latent_dim /2 * torch.log(self.beta_zero_sqrt ** 2)
 
         return logpx

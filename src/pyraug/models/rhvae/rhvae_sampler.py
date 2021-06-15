@@ -31,8 +31,11 @@ class RHVAESampler(BaseSampler):
             model=model,
             sampler_config=sampler_config)
 
-        self.model = model
         self.sampler_config = sampler_config
+
+        self.model.M_tens = self.model.M_tens.to(self.device)
+        self.model.centroids_tens = self.model.centroids_tens.to(self.device)
+
 
         self.mcmc_steps_nbr = sampler_config.mcmc_steps_nbr
         self.n_lf = torch.tensor([sampler_config.n_lf]).to(self.device)
@@ -140,9 +143,10 @@ class RHVAESampler(BaseSampler):
        
         with torch.no_grad():
             
-            idx = torch.randint(len(self.model.centroids_tens), (n_samples,))       
+            idx = torch.randint(len(self.model.centroids_tens), (n_samples,))
+
             z0 = self.model.centroids_tens[idx]
-           
+    
             
             beta_sqrt_old = self.beta_zero_sqrt
             z = z0

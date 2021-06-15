@@ -39,6 +39,8 @@ class BaseSampler:
 
         self.device = "cuda" if torch.cuda.is_available() and not sampler_config.no_cuda else 'cpu'
 
+        self.model.to(self.device)
+
 
 
     def sample(self, num_samples):

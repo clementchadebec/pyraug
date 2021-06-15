@@ -7,6 +7,9 @@ import torch
 from typing import Union, Optional
 from pyraug.trainers import Trainer
 from pyraug.customexception import LoadError
+from pyraug.models.rhvae import RHVAEConfig
+from pyraug.models import RHVAE
+
 
 
 from pyraug.data.loader import DataGetter, ImageGetterFromFolder
@@ -34,10 +37,19 @@ class TrainingPipeline(Pipeline):
         self.optimizer = optimizer
         self.training_config = training_config
 
+
+    def _set_default_model(self, data):
+        model_config = RHVAEConfig(input_dim=int(np.prod(data.shape[1:])))
+        model = RHVAE(model_config)
+        self.model = model
+
+
     def __call__(
         self,
         train_data: Union[str, np.ndarray, torch.Tensor],
-        eval_data: Union[str, np.ndarray, torch.Tensor]=None):
+        eval_data: Union[str, np.ndarray, torch.Tensor]=None,
+        log_output_dir: str = None
+        ):
         """
         Launch a model training
 
@@ -73,9 +85,13 @@ class TrainingPipeline(Pipeline):
                     f"Unable to load training data. Exception catch: {type(e)} with message: "
                     + str(e))
 
+
         train_data = self.data_processor.process_data(train_data)
         train_dataset = self.data_processor.to_dataset(train_data)
-       
+
+        if self.model is None:
+            self._set_default_model(train_data)
+
 
         if eval_data is not None:
             if self.data_loader is None:
@@ -115,4 +131,4 @@ class TrainingPipeline(Pipeline):
 
         self.trainer = trainer
 
-        trainer.train()
+        trainer.train(log_output_dir=log_output_dir)

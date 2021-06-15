@@ -10,7 +10,7 @@ def create_metric(model):
                         model.centroids_tens.unsqueeze(0) - z.unsqueeze(1), dim=-1
                     )
                     ** 2
-                    / (model.T ** 2)
+                    / (model.temperature ** 2)
                 )
                 .unsqueeze(-1)
                 .unsqueeze(-1)
@@ -29,7 +29,7 @@ def create_inverse_metric(model):
                     model.centroids_tens.unsqueeze(0) - z.unsqueeze(1), dim=-1
                 )
                 ** 2
-                / (model.T ** 2)
+                / (model.temperature ** 2)
             )
             .unsqueeze(-1)
             .unsqueeze(-1)

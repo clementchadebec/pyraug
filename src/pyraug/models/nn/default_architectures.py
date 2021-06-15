@@ -24,7 +24,7 @@ class Encoder_MLP(Base_Encoder):
         self.std = nn.Linear(500, self.latent_dim)
 
     def forward(self, x):
-        out = self.layers(x.view(-1, self.input_dim))
+        out = self.layers(x.reshape(-1, self.input_dim))
         return self.mu(out), self.std(out)
 
 
@@ -69,7 +69,7 @@ class Metric_MLP(Base_Metric):
 
     def forward(self, x):
 
-        h1 = self.layers(x.view(-1, self.input_dim))
+        h1 = self.layers(x.reshape(-1, self.input_dim))
         h21, h22 = self.diag(h1), self.lower(h1)
 
         L = torch.zeros((x.shape[0], self.latent_dim, self.latent_dim)).to(x.device)

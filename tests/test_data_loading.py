@@ -36,6 +36,7 @@ class Test_Data_Loading:
         os.path.join(PATH, 'data/loading/dummy_data_folder/example0.jpeg'),
         os.path.join(PATH, 'data/loading/dummy_data_folder/example0.jpg'),
         os.path.join(PATH, 'data/loading/dummy_data_folder/example0.png'),
+        os.path.join(PATH, 'data/loading/dummy_data_folder/example0.pt'),
         os.path.join(data_path, 'example4d.nii.gz')
     ])
     def demo_data(self, request):

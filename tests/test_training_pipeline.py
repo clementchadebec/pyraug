@@ -147,6 +147,7 @@ class Test_Pipeline:
         return model
 
     @pytest.fixture(params=[
+        None,
         Adagrad,
         Adam,
         Adadelta,
@@ -155,7 +156,12 @@ class Test_Pipeline:
     ])
     def optimizer(self, request, rhvae_sample, training_config):
         
-        optimizer = request.param(rhvae_sample.parameters(), lr=training_config.learning_rate)
+        if request.param is not None:
+            optimizer = request.param(rhvae_sample.parameters(), lr=training_config.learning_rate)
+
+        else:
+            optimizer = None
+            
         return optimizer
 
     def test_pipeline_tensor_data(self, messy_data, rhvae_sample, optimizer, training_config):
@@ -173,8 +179,8 @@ class Test_Pipeline:
 
         assert not all([
             torch.equal(
-                pipe.model.state_dict()[key],
-                start_model.state_dict()[key]) for key in start_model.state_dict().keys()
+                pipe.model.state_dict()[key].cpu(),
+                start_model.state_dict()[key].cpu()) for key in start_model.state_dict().keys()
         ])
 
     def test_saving(self, tmpdir, messy_data, rhvae_sample, optimizer, training_config):
@@ -230,13 +236,49 @@ class Test_Pipeline:
 
         assert all([
             torch.equal(
-                model_rec.state_dict()[key],
-                model.state_dict()[key])
+                model_rec.state_dict()[key].cpu(),
+                model.state_dict()[key].cpu())
                 for key in model.state_dict().keys()
         ])
 
-        assert torch.equal(model_rec.M_tens, model.M_tens)
-        assert torch.equal(model_rec.centroids_tens, model.centroids_tens)
-        assert type(model_rec.encoder) == type(model.encoder)
-        assert type(model_rec.decoder) == type(model.decoder)
-        assert type(model_rec.metric) == type(model.metric)
+        assert torch.equal(model_rec.M_tens.cpu(), model.M_tens.cpu())
+        assert torch.equal(model_rec.centroids_tens.cpu(), model.centroids_tens.cpu())
+        assert type(model_rec.encoder.cpu()) == type(model.encoder.cpu())
+        assert type(model_rec.decoder.cpu()) == type(model.decoder.cpu())
+        assert type(model_rec.metric.cpu()) == type(model.metric.cpu())
+
+
+class Test_Logging:
+
+    @pytest.fixture
+    def train_data(self):
+        return os.path.join(PATH, "data/loading/dummy_data_folder")
+
+    @pytest.fixture
+    def training_config(self, tmpdir):
+        tmpdir.mkdir('dummy_folder')
+        dir_path = os.path.join(tmpdir, "dummy_folder")
+        return TrainingConfig(
+            output_dir=dir_path,
+            max_epochs = 2,
+        )
+
+    @pytest.fixture
+    def model_sample(self):
+        return RHVAE(RHVAEConfig(input_dim=12*12))
+
+    def test_create_log_file(self, tmpdir, model_sample, train_data, training_config):
+        dir_log_path = os.path.join(tmpdir, "dummy_folder")
+
+        pipe = TrainingPipeline(
+        model=model_sample,
+        training_config=training_config
+    )
+
+        pipe(
+            train_data=train_data,
+            log_output_dir=dir_log_path)
+
+
+        assert os.path.isdir(dir_log_path)
+        assert 'training_logs.log' in os.listdir(dir_log_path)

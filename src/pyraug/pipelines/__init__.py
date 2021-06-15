@@ -1,7 +1,7 @@
 from pyraug.pipelines.generation import GenerationPipeline
-from pyraug.pipelines.augmentation import AugmentationPipeline
+from pyraug.pipelines.training import TrainingPipeline
 
 __all__ = [
-    "AugmentationPipeline",
+    "TrainingPipeline",
     "GenerationPipeline"
 ]

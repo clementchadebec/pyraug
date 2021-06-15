@@ -83,7 +83,7 @@ class Test_Set_Training_config:
         TrainingConfig(),
         TrainingConfig(
             batch_size=10,
-            learning_rate=1e-10
+            learning_rate=1e-5
         )
     ])
     def training_configs(self, request, tmpdir):
@@ -111,7 +111,7 @@ class Test_Build_Optimizer:
     @pytest.fixture(params=[
         TrainingConfig(),
         TrainingConfig(
-            learning_rate=1e-10
+            learning_rate=1e-5
         )
     ])
     def training_configs_learning_rate(self, tmpdir,request):
@@ -233,8 +233,117 @@ class Test_Init_EarlyStopping_Flags:
         assert trainer.make_eval_early_stopping == true_flag_eval_es 
 
 class Test_Device_Checks:
-    ####### TO BE IMPLEMENTED ########
-    pass
+    @pytest.fixture(params=[
+        TrainingConfig(
+            max_epochs=3,
+            no_cuda=True
+        ),
+        TrainingConfig(
+            max_epochs=3,
+            no_cuda=False
+        )
+    ])
+    def training_configs(self, tmpdir, request):
+        tmpdir.mkdir('dummy_folder')
+        dir_path = os.path.join(tmpdir, "dummy_folder")
+        request.param.output_dir = dir_path
+        return request.param
+
+    @pytest.fixture(params=[
+        RHVAEConfig(input_dim=784),
+        RHVAEConfig(
+            input_dim=784,
+            latent_dim=5)
+    ])
+    def rhvae_config(self, request):
+        return request.param
+
+
+    @pytest.fixture
+    def custom_encoder(self, rhvae_config):
+        return Encoder_MLP_Custom(rhvae_config)
+
+
+    @pytest.fixture
+    def custom_decoder(self, rhvae_config):
+        return Decoder_MLP_Custom(rhvae_config)
+
+    @pytest.fixture
+    def custom_metric(self, rhvae_config):
+        return Metric_MLP_Custom(rhvae_config)
+
+
+
+    @pytest.fixture(params=[
+        torch.rand(1),
+        torch.rand(1),
+        torch.rand(1)
+    ])
+    def rhvae_sample(self, rhvae_config, custom_encoder, custom_decoder, custom_metric, request):
+        # randomized
+        
+        alpha = request.param
+
+        if alpha < 0.125:
+            model = RHVAE(rhvae_config)
+
+        elif 0.125 <= alpha < 0.25:
+            model = RHVAE(rhvae_config, encoder=custom_encoder)
+
+        elif 0.25 <= alpha < 0.375:
+            model = RHVAE(rhvae_config, decoder=custom_decoder)
+
+        elif 0.375 <= alpha < 0.5:
+            model = RHVAE(rhvae_config, metric=custom_metric)
+
+        elif 0.5 <= alpha < 0.625:
+            model = RHVAE(rhvae_config, encoder=custom_encoder, decoder=custom_decoder)
+
+        elif 0.625 <= alpha < 0:
+            model = RHVAE(rhvae_config, encoder=custom_encoder, metric=custom_metric)
+
+        elif 0.750 <= alpha < 0.875:
+            model = RHVAE(rhvae_config, decoder=custom_decoder, metric=custom_metric)
+
+        else:
+            model = RHVAE(rhvae_config, encoder=custom_encoder, decoder=custom_decoder, metric=custom_metric)
+
+        return model
+
+    @pytest.fixture(params=[
+        None,
+        Adagrad,
+        Adam,
+        Adadelta,
+        SGD,
+        RMSprop
+    ])
+    def optimizers(self, request, rhvae_sample, training_configs):
+        if request.param is not None:
+            optimizer = request.param(rhvae_sample.parameters(), lr=training_configs.learning_rate)
+
+        else:
+            optimizer = None
+
+        return optimizer
+
+    
+    def test_set_on_device(self, rhvae_sample, train_dataset, training_config):
+        trainer = Trainer(
+            model=rhvae_sample,
+            train_dataset=train_dataset,
+            training_config=training_config
+        )
+
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+        if training_config.no_cuda:
+            assert next(trainer.model.parameters()).device == 'cpu'
+
+        else:
+            next(trainer.model.parameters()).device == device
+
+
 
 class Test_Sanity_Checks:
     @pytest.fixture
@@ -356,6 +465,8 @@ class Test_RHVAE_Training:
 
 
     @pytest.fixture(params=[
+        torch.rand(1),
+        torch.rand(1),
         torch.rand(1),
         torch.rand(1),
         torch.rand(1)
@@ -490,7 +601,7 @@ class Test_RHVAE_Saving:
         TrainingConfig(
             max_epochs=3,
             steps_saving=2,
-            learning_rate=1e-10
+            learning_rate=1e-5
         )
     ])
     def training_configs(self, tmpdir, request):
@@ -632,8 +743,8 @@ class Test_RHVAE_Saving:
         
         assert all([
             torch.equal(
-                model_rec_state_dict[key],
-                model.state_dict()[key])
+                model_rec_state_dict[key].cpu(),
+                model.state_dict()[key].cpu())
                 for key in model.state_dict().keys()
         ])
 
@@ -642,16 +753,16 @@ class Test_RHVAE_Saving:
 
         assert all([
             torch.equal(
-                model_rec.state_dict()[key],
-                model.state_dict()[key])
+                model_rec.state_dict()[key].cpu(),
+                model.state_dict()[key].cpu())
                 for key in model.state_dict().keys()
         ])
 
-        assert torch.equal(model_rec.M_tens, model.M_tens)
-        assert torch.equal(model_rec.centroids_tens, model.centroids_tens)
-        assert type(model_rec.encoder) == type(model.encoder)
-        assert type(model_rec.decoder) == type(model.decoder)
-        assert type(model_rec.metric) == type(model.metric)
+        assert torch.equal(model_rec.M_tens.cpu(), model.M_tens.cpu())
+        assert torch.equal(model_rec.centroids_tens.cpu(), model.centroids_tens.cpu())
+        assert type(model_rec.encoder.cpu()) == type(model.encoder.cpu())
+        assert type(model_rec.decoder.cpu()) == type(model.decoder.cpu())
+        assert type(model_rec.metric.cpu()) == type(model.metric.cpu())
 
 
 
@@ -659,7 +770,8 @@ class Test_RHVAE_Saving:
 
         assert all([
             dict_rec == dict_optimizer for (dict_rec, dict_optimizer) in zip(
-                optim_rec_state_dict['param_groups'], optimizer.state_dict()['param_groups']
+                optim_rec_state_dict['param_groups'],
+                optimizer.state_dict()['param_groups']
             )
         ])
 
@@ -787,16 +899,16 @@ class Test_RHVAE_Saving:
 
         assert all([
             torch.equal(
-                model_rec.state_dict()[key],
-                model.state_dict()[key])
+                model_rec.state_dict()[key].cpu(),
+                model.state_dict()[key].cpu())
                 for key in model.state_dict().keys()
         ])
 
-        assert torch.equal(model_rec.M_tens, model.M_tens)
-        assert torch.equal(model_rec.centroids_tens, model.centroids_tens)
-        assert type(model_rec.encoder) == type(model.encoder)
-        assert type(model_rec.decoder) == type(model.decoder)
-        assert type(model_rec.metric) == type(model.metric)
+        assert torch.equal(model_rec.M_tens.cpu(), model.M_tens.cpu())
+        assert torch.equal(model_rec.centroids_tens.cpu(), model.centroids_tens.cpu())
+        assert type(model_rec.encoder.cpu()) == type(model.encoder.cpu())
+        assert type(model_rec.decoder.cpu()) == type(model.decoder.cpu())
+        assert type(model_rec.metric.cpu()) == type(model.metric.cpu())
 
 
 class Test_Logging:
@@ -826,6 +938,6 @@ class Test_Logging:
         trainer.train(log_output_dir=dir_log_path)
 
         assert os.path.isdir(dir_log_path)
-        assert 'training_logs.log' in os.listdir(dir_log_path)
+        assert f'training_logs_{trainer._training_signature}.log' in os.listdir(dir_log_path)
 
 
