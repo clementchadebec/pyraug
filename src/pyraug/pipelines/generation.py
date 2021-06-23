@@ -1,11 +1,11 @@
 from .base_pipeline import Pipeline
-from pyraug.models import BaseVAE, BaseSampler
+from pyraug.models import BaseVAE
+from pyraug.models.base.base_sampler import BaseSampler
 
 
 import typing
 from typing import Union
 
-from pyraug.models.model_config import SamplerConfig
 from pyraug.models.rhvae import RHVAESamplerConfig
 from pyraug.models.rhvae.rhvae_sampler import RHVAESampler
 

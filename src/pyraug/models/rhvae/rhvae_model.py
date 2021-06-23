@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from pyraug.models.nn import Base_Metric
 from torch.autograd import grad
 import typing
 from typing import Optional
@@ -12,20 +11,20 @@ import dill
 import numpy as np
 from .rhvae_utils import create_metric, create_inverse_metric
 
-from pyraug.models.base_vae import BaseVAE
+from pyraug.models.base.base_vae import BaseVAE
 
-from pyraug.models.nn import Base_Encoder, Base_Decoder, Base_Metric
+from pyraug.models.nn import BaseEncoder, BaseDecoder, BaseMetric
 from pyraug.models.nn.default_architectures import Metric_MLP
 
 from pyraug.models.rhvae.rhvae_config import RHVAEConfig
-from pyraug.models.model_utils import ModelOuput
+from pyraug.models.base.base_utils import ModelOuput
 from pyraug.customexception import BadInheritanceError
 
 
 
 class RHVAE(BaseVAE):
     r"""
-    This class is  an implementation of the VAE model proposed in 
+    This is an implementation of the Riemannian Hamiltonian VAE model proposed in 
     (https://arxiv.org/pdf/2010.11518.pdf). This model provides a way to 
     learn the Riemannian latent structure of a given set of data set through a parametrized 
     Riemannian metric having the following shape:
@@ -44,9 +43,9 @@ class RHVAE(BaseVAE):
     def __init__(
         self,
         model_config: RHVAEConfig,
-        encoder: Optional[Base_Encoder]=None ,
-        decoder: Optional[Base_Decoder]=None,
-        metric:  Optional[Base_Metric]=None):
+        encoder: Optional[BaseEncoder]=None ,
+        decoder: Optional[BaseDecoder]=None,
+        metric:  Optional[BaseMetric]=None):
 
         BaseVAE.__init__(self, model_config=model_config, encoder=encoder, decoder=decoder)
 
@@ -104,19 +103,19 @@ class RHVAE(BaseVAE):
     def update(self):
         self.update_metric()
 
-    def set_metric(self, metric: Base_Metric) -> None:
+    def set_metric(self, metric: BaseMetric) -> None:
         r"""This method is called to set the metric network outputing the
         :math:`L_{\psi_i}` of the metric matrices 
 
         Args:
-            metric (Base_Metric): The metric module that need to be set to the model.
+            metric (BaseMetric): The metric module that need to be set to the model.
                 
         """
-        if not issubclass(type(metric), Base_Metric):
+        if not issubclass(type(metric), BaseMetric):
             raise BadInheritanceError(
                 (
-                    "Metric must inherit from Base_Metric class from "
-                    "pyraug.models.base_architectures.Base_Metric. Refer to documentation."
+                    "Metric must inherit from BaseMetric class from "
+                    "pyraug.models.base_architectures.BaseMetric. Refer to documentation."
                 )
             )
         

@@ -56,7 +56,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
             ],
             [
                 os.path.join(PATH, "data/loading/dummy_data_folder"),
-                (6, 1, 12, 12),
+                (6, 3, 12, 12),
                 os.path.join(PATH, "data/loading/dummy_data_folder")
             ]
         ])
@@ -265,7 +265,7 @@ class Test_Logging:
 
     @pytest.fixture
     def model_sample(self):
-        return RHVAE(RHVAEConfig(input_dim=12*12))
+        return RHVAE(RHVAEConfig(input_dim=3*12*12))
 
     def test_create_log_file(self, tmpdir, model_sample, train_data, training_config):
         dir_log_path = os.path.join(tmpdir, "dummy_folder")
@@ -281,4 +281,4 @@ class Test_Logging:
 
 
         assert os.path.isdir(dir_log_path)
-        assert 'training_logs.log' in os.listdir(dir_log_path)
+        assert f'training_logs_{pipe.trainer._training_signature}.log' in os.listdir(dir_log_path)

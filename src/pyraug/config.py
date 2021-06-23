@@ -78,5 +78,12 @@ class BaseConfig:
         return json.dumps(self.to_dict())
 
     def save_json(self, dir_path, filename):
+        """Saves a ``.json`` file from the dataclass
+        
+        Args:
+            dir_path (str): path to the folder
+            filename (str): the name of the file
+            
+        """
         with open(os.path.join(dir_path, f"{filename}.json"), "w", encoding="utf-8") as fp:
             fp.write(self.to_json_string())

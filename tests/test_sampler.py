@@ -5,9 +5,9 @@ import numpy as np
 
 
 from pyraug.models import BaseVAE
-from pyraug.models.model_config import ModelConfig
-from pyraug.models.base_sampler import BaseSampler
-from pyraug.models.model_config import SamplerConfig
+from pyraug.models.base.base_config import BaseModelConfig, BaseSamplerConfig
+from pyraug.models.base.base_sampler import BaseSampler
+
 from pyraug.models.rhvae import RHVAEConfig, RHVAESamplerConfig
 from pyraug.models import RHVAE
 from pyraug.models.rhvae.rhvae_sampler import RHVAESampler
@@ -22,14 +22,14 @@ def dummy_data():
 
 @pytest.fixture
 def model_sample():
-    return BaseVAE((ModelConfig(input_dim=784)))
+    return BaseVAE((BaseModelConfig(input_dim=784)))
 
 @pytest.fixture()
 def sampler_sample(tmpdir, model_sample):
     tmpdir.mkdir('dummy_folder')
     return BaseSampler(
         model=model_sample,
-        sampler_config=SamplerConfig(
+        sampler_config=BaseSamplerConfig(
             output_dir=os.path.join(tmpdir, "dummy_folder"),
             batch_size=2))
 
@@ -63,7 +63,7 @@ class Test_data_saving:
 
         assert os.path.isfile(sampler_config_file)
 
-        generation_config_rec = SamplerConfig.from_json_file(sampler_config_file)
+        generation_config_rec = BaseSamplerConfig.from_json_file(sampler_config_file)
 
         assert generation_config_rec.__dict__ == sampler_sample.sampler_config.__dict__
 
@@ -71,11 +71,11 @@ class Test_data_saving:
 class Test_Sampler_Set_up:
 
     @pytest.fixture(params=[
-            SamplerConfig(
+            BaseSamplerConfig(
                 batch_size=1
             )
         , # (target full batch number, target last full batch size, target_batch_number) 
-            SamplerConfig(
+            BaseSamplerConfig(
                 batch_size=2
             )
         

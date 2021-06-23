@@ -3,8 +3,8 @@ import torch
 import os
 from copy import deepcopy
 
-from pyraug.models.model_config import ModelConfig
-from pyraug.models.base_vae import BaseVAE
+from pyraug.models.base.base_config import BaseModelConfig
+from pyraug.models import BaseVAE
 
 from pyraug.trainers.trainers import Trainer
 from pyraug.trainers.training_config import TrainingConfig
@@ -25,7 +25,7 @@ def train_dataset():
 
 @pytest.fixture()
 def model_sample():
-    return BaseVAE(ModelConfig(input_dim=784))
+    return BaseVAE(BaseModelConfig(input_dim=784))
 
 @pytest.fixture
 def training_config(tmpdir):

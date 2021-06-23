@@ -3,6 +3,7 @@ import os
 import torch
 import logging
 import importlib
+import numpy as np
 
 from pyraug.models import RHVAE
 from pyraug.models.rhvae import RHVAEConfig
@@ -59,6 +60,11 @@ def main(args):
     train_data = ImageGetterFromFolder.load(args.path_to_train_data)
     train_data = DataProcessor.process_data(train_data)
     train_dataset = DataProcessor.to_dataset(train_data)
+
+    print(train_dataset.data.shape, train_dataset.data.max())
+
+    # set input dimension automatically
+    model_config.input_dim = int(np.prod(train_dataset.data.shape[1:]))
 
     if args.path_to_eval_data is not None:
         eval_data = ImageGetterFromFolder(args.path_to_eval_data)

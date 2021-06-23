@@ -7,9 +7,9 @@ from typing import Union
 @dataclass
 class TrainingConfig(BaseConfig):
     """
-    TrainingConfig is the class in which all the training arguments are stored.
-    This instance is then provided to a `Trainer` instance to perform a model
-    training.
+    :class:`~pyraug.trainers.training_config.TrainingConfig` is the class in which all the training arguments are stored.
+    This instance is then provided to a :class:`~pyraug.trainers.Trainer` instance which performs 
+    a model training.
 
     Parameters:
 
@@ -23,10 +23,10 @@ class TrainingConfig(BaseConfig):
         learning_rate (int): The learning rate applied to the `Optimizer`. Default: 1e-3
 
         train_early_stopping (int): The maximal number of epochs authorized without train loss
-            improvement. Default: 50
+            improvement. If None no early stopping is performed. Default: 50
 
         eval_early_stopping (int): The maximal number of epochs authorized without eval loss
-            improvement. Default: 50
+            improvement. If None no early stopping is performed. Default: None
 
         steps_saving (int): A model checkpoint will be saved every `steps_saving` epoch 
 

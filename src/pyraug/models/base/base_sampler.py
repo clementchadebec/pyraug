@@ -2,25 +2,30 @@ import typing
 import os
 import logging
 import torch
-from pyraug.models.model_config import SamplerConfig
-from pyraug.models import BaseVAE
+from .base_config import BaseSamplerConfig
+from .base_vae import BaseVAE
 
 
 logger = logging.getLogger(__name__)
+
+# make it print to the console.
+console = logging.StreamHandler()
+logger.addHandler(console)
+logger.setLevel(logging.INFO)
 
 class BaseSampler:
     """Base class for sampler used to generate from the VAEs models
     
     Args:
         model (BaseVAE): The vae model to sample from.
-        sampler_config (SamplerConfig): An instance of SamplerConfig in which any sampler's
+        sampler_config (BaseSamplerConfig): An instance of BaseSamplerConfig in which any sampler's
             parameters is made available. If None a default configuration is used. Default: None
     """
 
     def __init__(
         self,
         model: BaseVAE,
-        sampler_config: SamplerConfig = None
+        sampler_config: BaseSamplerConfig = None
     ):
 
         if sampler_config.output_dir is None:
@@ -29,7 +34,7 @@ class BaseSampler:
 
         if not os.path.exists(sampler_config.output_dir):
             os.makedirs(sampler_config.output_dir)
-            logger.info(f"Created {sampler_config.output_dir} folder since did not exist. ")
+            logger.info(f"Created {sampler_config.output_dir} folder since did not exist.\n")
         
         self.model = model
         self.sampler_config = sampler_config

@@ -1,5 +1,5 @@
 {
-  "input_dim": 3072,
+  "input_dim": 784,
   "latent_dim": 10,
   "n_lf": 3,
   "eps_lf": 0.001,

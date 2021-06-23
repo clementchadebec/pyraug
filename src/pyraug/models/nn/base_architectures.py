@@ -4,7 +4,9 @@ import torch
 import torch.nn as nn
 
 
-class Base_Encoder(nn.Module):
+class BaseEncoder(nn.Module):
+    """This is a base class for Encoders neural networks.
+    """
     def __init__(self):
         nn.Module.__init__(self)
 
@@ -17,10 +19,10 @@ class Base_Encoder(nn.Module):
 
         .. code-block::
 
-            class My_Encoder(Base_Encoder):
+            class My_Encoder(BaseEncoder):
 
                 def __init__(self):
-                    Base_Encoder.__init__(self)
+                    BaseEncoder.__init__(self)
                     # your code
 
                 def forward(self, x):
@@ -42,7 +44,9 @@ class Base_Encoder(nn.Module):
         NotImplementedError()
 
 
-class Base_Decoder(nn.Module):
+class BaseDecoder(nn.Module):
+    """This is a base class for Decoders neural networks.
+    """
     def __init__(self):
         nn.Module.__init__(self)
 
@@ -55,10 +59,10 @@ class Base_Decoder(nn.Module):
 
         .. code-block::
 
-            class My_decoder(Base_Decoder):
+            class My_decoder(BaseDecoder):
 
                 def __init__(self):
-                    Base_Decoder.__init__(self)
+                    BaseDecoder.__init__(self)
                     # your code
 
                 def forward(self, z):
@@ -74,7 +78,10 @@ class Base_Decoder(nn.Module):
         raise NotImplementedError()
 
 
-class Base_Metric(nn.Module):
+class BaseMetric(nn.Module):
+    """This is a base class for Metrics neural networks 
+    (only applicable for Riemannian based VAE)
+    """
     def __init__(self):
         nn.Module.__init__(self)
 
@@ -87,10 +94,10 @@ class Base_Metric(nn.Module):
 
         .. code-block::
 
-            class My_Metric(Base_Metric):
+            class My_Metric(BaseMetric):
 
                 def __init__(self):
-                    Base_Metric.__init__(self)
+                    BaseMetric.__init__(self)
                     # your code
 
                 def forward(self, x):

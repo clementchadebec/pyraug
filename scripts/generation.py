@@ -6,9 +6,6 @@ import logging
 from pyraug.models.rhvae.rhvae_sampler import RHVAESampler, RHVAESamplerConfig
 from pyraug.models import RHVAE
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
 PATH = os.path.dirname(os.path.abspath(__file__))
 
 ap = argparse.ArgumentParser()

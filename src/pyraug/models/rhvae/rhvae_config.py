@@ -1,11 +1,10 @@
-from pyraug.models.model_config import ModelConfig
-from pyraug.models.model_config import SamplerConfig
+from pyraug.models.base.base_config import BaseModelConfig, BaseSamplerConfig
 from pyraug.config import BaseConfig
 
 from pydantic.dataclasses import dataclass
 
 @dataclass
-class RHVAEConfig(ModelConfig):
+class RHVAEConfig(BaseModelConfig):
     r"""Riemannian Hamiltonian Auto Encoder config class
     
     Parameters:
@@ -33,7 +32,7 @@ class RHVAEConfig(ModelConfig):
 
 
 @dataclass
-class RHVAESamplerConfig(SamplerConfig):
+class RHVAESamplerConfig(BaseSamplerConfig):
     """HMCSampler config class containing the main parameters of the sampler.
 
     Parameters:

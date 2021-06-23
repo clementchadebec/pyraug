@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from pyraug.config import BaseConfig
 
-from pyraug.models.model_config import ModelConfig
+from pyraug.models.base.base_config import BaseModelConfig
 
 from pyraug.models.rhvae.rhvae_config import RHVAEConfig, RHVAESamplerConfig
 from pyraug.trainers.training_config import TrainingConfig
@@ -18,8 +18,8 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 class Test_Save_Model_JSON_from_Config:
 
     @pytest.fixture(params=[
-        ModelConfig(),
-        ModelConfig(input_dim=100, latent_dim=5)
+        BaseModelConfig(),
+        BaseModelConfig(input_dim=100, latent_dim=5)
     ])
     def model_configs(self, request):
         return request.param
@@ -32,7 +32,7 @@ class Test_Save_Model_JSON_from_Config:
 
         assert 'dummy_json.json' in os.listdir(dir_path)
 
-        rec_model_config = ModelConfig.from_json_file(os.path.join(dir_path, "dummy_json.json"))
+        rec_model_config = BaseModelConfig.from_json_file(os.path.join(dir_path, "dummy_json.json"))
 
         assert rec_model_config.__dict__ == model_configs.__dict__
 

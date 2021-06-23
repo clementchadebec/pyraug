@@ -2,12 +2,17 @@ import torch
 import os
 import logging
 
-from pyraug.models.base_sampler import BaseSampler
-from pyraug.models.rhvae.rhvae_config import RHVAESamplerConfig
-from pyraug.models import RHVAE
+from ..base.base_sampler import BaseSampler
+from .rhvae_config import RHVAESamplerConfig
+from .rhvae_model import RHVAE
 import datetime
 
 logger = logging.getLogger(__name__)
+
+# make it print to the console.
+console = logging.StreamHandler()
+logger.addHandler(console)
+logger.setLevel(logging.INFO)
 
 
 class RHVAESampler(BaseSampler):
@@ -71,7 +76,7 @@ class RHVAESampler(BaseSampler):
         if not os.path.exists(sampling_dir):
             os.makedirs(sampling_dir)
             logger.info(f"Created {sampling_dir}."
-                "Generated data and sampler config will be saved here.")
+                "Generated data and sampler config will be saved here.\n")
 
 
         full_batch_nbr = int(samples_number / self.sampler_config.batch_size)
@@ -87,6 +92,8 @@ class RHVAESampler(BaseSampler):
     
         file_count = 0
         data_count = 0
+
+        logger.info("Generation successfully launched !\n")
 
         for i in range(full_batch_nbr):
 

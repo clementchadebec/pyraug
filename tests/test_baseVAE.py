@@ -2,26 +2,30 @@ import pytest
 import os
 import torch
 
-from pyraug.models.base_vae import BaseVAE
-from pyraug.models.model_config import ModelConfig
+from pyraug.models import BaseVAE
+from pyraug.models.base.base_config import BaseModelConfig, BaseSamplerConfig
 
 from pyraug.customexception import BadInheritanceError
 from tests.data.rhvae.custom_architectures import Decoder_Conv, Encoder_Conv, NetBadInheritance
 
 @pytest.fixture(params=[
-    ModelConfig(),
-    ModelConfig(latent_dim=5)
+    BaseModelConfig(),
+    BaseModelConfig(latent_dim=5)
 ])
 def model_configs_no_input_dim(request):
     return request.param
 
 @pytest.fixture(params=[
-    ModelConfig(
+    BaseModelConfig(
         input_dim=784,
         latent_dim=10,
     ),
-    ModelConfig(
+    BaseModelConfig(
         input_dim=100,
+        latent_dim=5
+    ),
+    BaseModelConfig(
+        input_dim=1e6,
         latent_dim=5
     )
 ])

@@ -4,14 +4,16 @@ from pyraug.config import BaseConfig
 from pydantic.dataclasses import dataclass
 
 @dataclass
-class ModelConfig(BaseConfig):
-    """This is the base configuration instance of the models
+class BaseModelConfig(BaseConfig):
+    """This is the base configuration instance of the models deriving from 
+    :class:`~pyraug.config.BaseConfig`. 
     
     Parameters:
         input_dim (int): The input_data dimension
         latent_dim (int): The latent space dimension. Default: None.
         default_encoder (bool): Whether the encoder default. Default: True.
-        default_encoder (bool): Whether the encoder default. Default: True."""
+        default_decoder (bool): Whether the encoder default. Default: True.
+        """
 
     input_dim: int = None
     latent_dim: int = 10
@@ -20,7 +22,7 @@ class ModelConfig(BaseConfig):
 
 
 @dataclass
-class SamplerConfig(BaseConfig):
+class BaseSamplerConfig(BaseConfig):
     """
     This is the base configuration of a model sampler
 

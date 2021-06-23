@@ -6,15 +6,11 @@ import torch.nn as nn
 from pyraug.models.nn import *
 
 
-class Encoder_MLP(Base_Encoder):
+class Encoder_MLP(BaseEncoder):
     def __init__(self, args: dict):
-        Base_Encoder.__init__(self)
+        BaseEncoder.__init__(self)
 
-        if args.input_dim is None:
-            raise AttributeError("No input dimension provided !"
-            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where "
-            "the shape of the data is [mini_batch x data_shape]. Unable to build encoder " 
-            "automatically")
+        
 
         self.input_dim = args.input_dim
         self.latent_dim = args.latent_dim
@@ -28,15 +24,9 @@ class Encoder_MLP(Base_Encoder):
         return self.mu(out), self.std(out)
 
 
-class Decoder_MLP(Base_Decoder):
+class Decoder_MLP(BaseDecoder):
     def __init__(self, args: dict):
-        Base_Decoder.__init__(self)
-
-        if args.input_dim is None:
-            raise AttributeError("No input dimension provided !"
-            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where "
-            "the shape of the data is [mini_batch x data_shape]. Unable to build decoder" 
-            "automatically")
+        BaseDecoder.__init__(self)
 
         self.layers = nn.Sequential(
             nn.Linear(args.latent_dim, 500),
@@ -48,10 +38,50 @@ class Decoder_MLP(Base_Decoder):
     def forward(self, z):
         return self.layers(z)
 
-
-class Metric_MLP(Base_Metric):
+        
+class Encoder_MLP_High(BaseEncoder):
     def __init__(self, args: dict):
-        Base_Metric.__init__(self)
+        BaseEncoder.__init__(self)
+
+    
+        self.input_dim = args.input_dim
+        self.latent_dim = args.latent_dim
+
+        self.layers = nn.Sequential(
+            nn.Linear(args.input_dim, 500),
+            nn.ReLU(),
+            nn.Linear(500, 500),
+            nn.ReLU(),
+            nn.Linear(500, 400))
+        self.mu = nn.Linear(400, self.latent_dim)
+        self.std = nn.Linear(400, self.latent_dim)
+
+    def forward(self, x):
+        out = self.layers(x.reshape(-1, self.input_dim))
+        return self.mu(out), self.std(out)
+
+
+class Decoder_MLP_High(BaseDecoder):
+    def __init__(self, args: dict):
+        BaseDecoder.__init__(self)
+
+        self.layers = nn.Sequential(
+            nn.Linear(args.latent_dim, 400),
+            nn.ReLU(),
+            nn.Linear(400, 500),
+            nn.ReLU(),
+            nn.Linear(500, 500),
+            nn.ReLU(),
+            nn.Linear(500, args.input_dim),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, z):
+        return self.layers(z)
+
+class Metric_MLP(BaseMetric):
+    def __init__(self, args: dict):
+        BaseMetric.__init__(self)
 
         if args.input_dim is None:
             raise AttributeError("No input dimension provided !"
@@ -86,9 +116,9 @@ class Metric_MLP(Base_Metric):
         return L
 
 
-class Encoder_Conv(Base_Encoder):
+class Encoder_Conv(BaseEncoder):
     def __init__(self, args):
-        Base_Encoder.__init__(self)
+        BaseEncoder.__init__(self)
         self.input_dim = args.input_dim
         self.latent_dim = args.latent_dim
         self.n_channels = args.n_channels
@@ -118,10 +148,10 @@ class Encoder_Conv(Base_Encoder):
         return self.mu(out), self.std(out)
 
 
-class Decoder_Conv(Base_Decoder):
+class Decoder_Conv(BaseDecoder):
     def __init__(self, args):
 
-        Base_Decoder.__init__(self)
+        BaseDecoder.__init__(self)
 
         self.input_dim = args.input_dim
         self.latent_dim = args.latent_dim
