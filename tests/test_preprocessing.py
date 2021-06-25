@@ -4,7 +4,7 @@ import os
 import numpy as np
 from pyraug.data.preprocessors import DataProcessor
 
-from pyraug.data.loader import ImageGetterFromFolder
+from pyraug.data.loaders import ImageGetterFromFolder
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -40,6 +40,11 @@ class Test_Format_Data:
 
 class Test_Apply_Transforms:
 
+    @pytest.fixture(params=[
+        'min_max_scaling', 'individual_min_max_scaling'])
+    def normalization_type(self, request):
+        return request.param
+
     @pytest.fixture(
     params=[
         [[np.array([[10.0, 1]]), np.array([[2, 0.0]]), np.array([[0.0, 1.0]])], (3, 1, 2)],
@@ -52,16 +57,39 @@ class Test_Apply_Transforms:
     def unormalized_data(self, request):
         return request.param
 
-    def test_normalize_data(self, unormalized_data):
-        checked_data = DataProcessor.process_data(unormalized_data[0])
-        assert (
-            bool(all([c_data.min() >= 0 for c_data in checked_data])) 
-            and bool(all([c_data.max() <= 1 for c_data in checked_data])))
+    def test_normalize_data(self, unormalized_data, normalization_type):
+
        
 
-    def test_data_shape(self, unormalized_data):
+        with pytest.raises(RuntimeError):
+            data_processor = DataProcessor(data_normalization_type=None)
+            checked_data = data_processor.process_data(unormalized_data[0])
+
+        data_processor = DataProcessor(data_normalization_type=None)
+        checked_data = data_processor.normalize_data(unormalized_data[0])
+        # Check nothing happens with normalization set to None
+        assert checked_data == unormalized_data[0]
+
+
+        data_processor = DataProcessor(data_normalization_type=normalization_type)
+        checked_data = data_processor.process_data(unormalized_data[0])
+
+        if normalization_type == 'min_max_scaling':
+            assert (
+                bool(all([c_data.min() >= 0 for c_data in checked_data])) 
+                and bool(all([c_data.max() <= 1 for c_data in checked_data])))
+
+        elif normalization_type == 'individual_min_max_scaling':
+            assert (
+                bool(all([c_data.min() == 0 for c_data in checked_data])) 
+                and bool(all([c_data.max() == 1 for c_data in checked_data])))
+
+
+
+    def test_data_shape(self, unormalized_data, normalization_type):
         
-        checked_data = DataProcessor._process_data_list(unormalized_data[0])
+        data_processor = DataProcessor(data_normalization_type=normalization_type)
+        checked_data = data_processor._process_data_list(unormalized_data[0])
         #assert 0, f"{checked_data}"
         assert (
             checked_data.shape
@@ -116,21 +144,38 @@ class Test_Apply_Transforms:
     def messy_data(self, request):
         return request.param
 
-    def test_transforms_messy_data(self, messy_data):
-        checked_data = DataProcessor.process_data(messy_data[0])
+    def test_transforms_messy_data(self, messy_data, normalization_type):
+
+        data_processor = DataProcessor(data_normalization_type=normalization_type)
+        checked_data = data_processor.process_data(messy_data[0])
+
 
         assert checked_data.shape == messy_data[1]
-        assert (
-            bool(all([c_data.min() >= 0 for c_data in checked_data])) 
-            and bool(all([c_data.max() <= 1 for c_data in checked_data])))
+        if normalization_type == 'min_max_scaling':
+            assert (
+                bool(all([c_data.min() >= 0 for c_data in checked_data])) 
+                and bool(all([c_data.max() <= 1 for c_data in checked_data])))
+            assert not (
+                bool(all([c_data.min() == 0 for c_data in checked_data])) 
+                and bool(all([c_data.max() == 1 for c_data in checked_data])))
+
+        elif normalization_type == 'individual_min_max_scaling':
+            assert (
+                bool(all([c_data.min() == 0 for c_data in checked_data])) 
+                and bool(all([c_data.max() == 1 for c_data in checked_data])))
 
 
-    def test_create_dataset(self, messy_data):
+    def test_create_dataset(self, messy_data, normalization_type):
 
         labels = torch.rand(messy_data[1][0]) 
 
-        checked_data = DataProcessor.process_data(messy_data[0])
+        data_processor = DataProcessor(data_normalization_type=normalization_type)
+
+        checked_data = data_processor.process_data(messy_data[0])
         dataset = DataProcessor.to_dataset(checked_data, labels)
 
         assert torch.equal(dataset.data, checked_data)
         assert torch.equal(dataset.labels, labels)
+
+
+        

@@ -177,6 +177,12 @@ class Test_Pipeline:
             train_data=messy_data[0],
             eval_data=messy_data[2])
 
+
+        assert (
+                bool(all([c_data.min() == 0 for c_data in pipe.train_data])) 
+                and bool(all([c_data.max() == 1 for c_data in pipe.train_data])))
+
+
         assert not all([
             torch.equal(
                 pipe.model.state_dict()[key].cpu(),

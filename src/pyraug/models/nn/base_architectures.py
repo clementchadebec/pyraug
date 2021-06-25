@@ -74,6 +74,11 @@ class BaseDecoder(nn.Module):
             
         Returns:
             (torch.Tensor): The mean of the conditional distribution :math:`p_{\theta}(x|z)`
+        
+        .. note::
+
+            By convention, the output tensors :math:`\mu` should be in [0, 1]
+        
         """
         raise NotImplementedError()
 

@@ -50,11 +50,11 @@ class BaseConfig:
             )
 
     @classmethod
-    def from_json_file(cls, json_path: Union[str, os.PathLike]) -> "BaseConfig":
+    def from_json_file(cls, json_path: str) -> "BaseConfig":
         """Creates a :class:`~pyraug.config.BaseConfig` instance from a JSON config file
         
         Args:
-            json_path (str, os.PathLike): The path to the json file containing all the parameters
+            json_path (str): The path to the json file containing all the parameters
 
         Returns:
             :class:`BaseConfig`: The created instance   
@@ -71,7 +71,7 @@ class BaseConfig:
         return asdict(self)
 
     def to_json_string(self):
-        """Transforms object into a JSON str
+        """Transforms object into a JSON string
         
         Returns:
             (str): The JSON str containing all the parameters"""

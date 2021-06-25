@@ -15,9 +15,8 @@ class RHVAEConfig(BaseModelConfig):
             Default: 0.3
         temperature (float): The metric temperature :math:`T`. Default: 1.5
         regularization (float): The metric regularization factor :math:`\lambda`
-        encoder (str): Whether it uses a `custom` or `default` encoder architecture 
-        decoder (str): Whether it uses a `custom` or `default` decoder architecture 
-        metric (str): Whether it uses a `custom` or `default` metric architecture 
+        uses_default_metric (bool): Whether it uses a `custom` or `default` metric architecture. 
+            This is updated automatically.
         """ 
     input_dim: int = None
     latent_dim: int = 10
@@ -27,8 +26,6 @@ class RHVAEConfig(BaseModelConfig):
     temperature: float = 1.5
     regularization: float = 0.01
     uses_default_metric: bool = True
-    #no_cuda: bool = False
-    #device: str = "cuda" if torch.cuda.is_available() and not no_cuda else "cpu"
 
 
 @dataclass

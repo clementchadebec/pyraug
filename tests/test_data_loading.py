@@ -5,7 +5,7 @@ import os
 
 from pyraug.customexception import LoadError
 
-from pyraug.data.loader import ImageGetterFromFolder
+from pyraug.data.loaders import ImageGetterFromFolder
 from pyraug.data.datasets import BaseDataset
 
 from nibabel.testing import data_path
@@ -57,24 +57,3 @@ class Test_Data_Loading_From_Folder:
         for d in data:
             assert type(d) == np.ndarray
             assert len(d.shape) == 3
-
-# # data loading
-# class Test_Data_Loading:
-#     @pytest.fixture
-#     def demo_data_path(self):
-#         return "src/pyraug/demo/data/mnist_demo_no_targets"
-# 
-#     @pytest.fixture
-#     def corrupted_path(self):
-#         return "corrupted_path_to_data"
-# 
-#     def test_load_demo_data(self, demo_data_path):
-#         data_getter = DataGetter()
-#         data = data_getter.get_data(demo_data_path)
-#         assert data is not None
-# 
-#     def test_raise_load_error(self, corrupted_path):
-#         data_getter = DataGetter()
-#         with pytest.raises(LoadError):
-#             data = data_getter.get_data(corrupted_path)
-

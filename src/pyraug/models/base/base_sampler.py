@@ -86,8 +86,8 @@ class BaseSampler:
                 >>> import torch
                 >>> import os
                 >>> data = torch.load(
-                    os.path.join(
-                        'dir_path', 'generated_data_{number_of_samples}_{batch_idx}.pt'))
+                ...    os.path.join(
+                ...        'dir_path', 'generated_data_{number_of_samples}_{batch_idx}.pt'))
         """
 
         if not os.path.exists(dir_path):

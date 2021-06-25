@@ -1,12 +1,17 @@
 data
 __pycache__
 notebooks
-docs
+#docs
 src/pyraug.egg-info
 .vscode
 OLD
 .ipynb_checkpoints
 licence
+examples/my_model/*
+examples/my_model_with_custom_archi/*
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

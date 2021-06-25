@@ -330,11 +330,9 @@ class RHVAE(BaseVAE):
 
         .. note::
             This function requires the folder to contain:
-                - a ``model_config.json`` and a ``model.pt`` if no custom architectures were
+                a ``model_config.json`` and a ``model.pt`` if no custom architectures were
                 provided
-
-                or 
-                - a ``model_config.json``, a ``model.pt`` and a ``encoder.pkl`` (resp. 
+                a ``model_config.json``, a ``model.pt`` and a ``encoder.pkl`` (resp. 
                 ``decoder.pkl`` or/and ``metric.pkl``) if a custom encoder (resp. decoder or/and
                 metric) was provided
         """

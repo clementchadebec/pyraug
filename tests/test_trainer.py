@@ -715,7 +715,7 @@ class Test_RHVAE_Saving:
 
         files_list = os.listdir(checkpoint_dir)
 
-        assert set(['model.pt', 'optimizer.pt']).issubset(set(files_list))
+        assert set(['model.pt', 'optimizer.pt', 'training_config.json']).issubset(set(files_list))
 
         # check pickled custom decoder
         if not rhvae_sample.model_config.uses_default_decoder:
@@ -811,7 +811,7 @@ class Test_RHVAE_Saving:
         files_list = os.listdir(checkpoint_dir)
 
         # check files 
-        assert set(['model.pt', 'optimizer.pt']).issubset(set(files_list))
+        assert set(['model.pt', 'optimizer.pt', 'training_config.json']).issubset(set(files_list))
 
         # check pickled custom decoder
         if not rhvae_sample.model_config.uses_default_decoder:

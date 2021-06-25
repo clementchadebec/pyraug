@@ -15,7 +15,7 @@ from pyraug.customexception import *
 
 
 
-from torch.utils.data import Dataset
+from pyraug.data.datasets import BaseDataset
 from pyraug.models import BaseVAE
 from pyraug.trainers.trainer_utils import set_seed
 from pyraug.trainers.training_config import TrainingConfig
@@ -36,21 +36,21 @@ class Trainer:
     Args:
         model (BaseVAE): The model to train
 
-        train_dataset (Dataset): The training dataset if type :class:`~torch.utils.data.Dataset`
+        train_dataset (BaseDataset): The training dataset of type :class:`~pyraug.`
 
         training_args (TrainingConfig): The training arguments summarizing the main parameters used
             for training. If None, a basic training instance of :class:`TrainingConfig` is used.
             Default: None.
          
-        optimizer (torch.optim.Optimizer): An instance of `torch.optim.Optimizer` used for
-            training. If nothing is provided, a basic ``torch.optim.Adam`` is used.
+        optimizer (~torch.optim.Optimizer): An instance of `torch.optim.Optimizer` used for
+            training. If None, a :class:`~torch.optim.Adam` optimizer is used. Default: None.
     """
 
     def __init__(
         self,
         model: BaseVAE,
-        train_dataset: Dataset,
-        eval_dataset: Optional[Dataset]=None,
+        train_dataset: BaseDataset,
+        eval_dataset: Optional[BaseDataset]=None,
         training_config: Optional[TrainingConfig] = None,
         optimizer: Optional[torch.optim.Optimizer] = None
     ):
@@ -113,7 +113,7 @@ class Trainer:
 
     
     def get_train_dataloader(
-        self, train_dataset: Dataset
+        self, train_dataset: BaseDataset
     ) -> torch.utils.data.DataLoader:
 
         return DataLoader(
@@ -123,7 +123,7 @@ class Trainer:
         )
 
     def get_eval_dataloader(
-        self, eval_dataset: Dataset) -> torch.utils.data.DataLoader:
+        self, eval_dataset: BaseDataset) -> torch.utils.data.DataLoader:
         return DataLoader(
             dataset=eval_dataset,
             batch_size=self.training_config.batch_size,
@@ -327,6 +327,10 @@ class Trainer:
             # save checkpoints
             if epoch % self.training_config.steps_saving == 0:
                 self.save_checkpoint(dir_path=training_dir, epoch=epoch)
+                logger.info(f'Saved checkpoint at epoch {epoch}')
+
+                if log_verbose:
+                    file_logger.info(f'Saved checkpoint at epoch {epoch}')
 
             if log_verbose and epoch % 10 == 0:
                 if self.eval_dataset is not None:
@@ -472,3 +476,7 @@ class Trainer:
 
         # save model
         self.model.save(checkpoint_dir)
+
+        # save training config
+        self.training_config.save_json(checkpoint_dir, "training_config")
+
