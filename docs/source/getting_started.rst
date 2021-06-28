@@ -26,16 +26,42 @@ or alternatively clone the github repo to access to test and tutorials.
 
     $ git clone 
 
+
+************************************************
+Pyraug's spirit & overview
+************************************************
+
+The Pyraug's library organizes as follows
+
+.. centered::
+    |pic3|
+    Pyraug's overview
+
+.. |pic3| image:: imgs/pyraug_diagram_simplified.jpg
+
+
+If you clone the Pyraug's :
+
+- ``docs``: The folder in which the documentation can be retrieved
+- ``tests``: Pyraug's unit-testing using pytest
+- ``examples``: A list of ``ipynb`` tutorials describing the main functionalities of Pyraug
+- ``pyraug``: 
+
+All the augmentation models are implemented in :ref:`pyraug.models` module 
+
+
+
 ************************************************
 Augmenting your Data
 ************************************************
 
-There exists two ways to augment your data pretty straightforwardly using Pyraug's built-in functions. In Pyraug, a typical augmentation process is divided into 2 distinct parts:
+In Pyraug, a typical augmentation process is divided into 2 distinct parts:
 
     - Train a model using the Pyraug's :class:`~pyraug.pipelines.TrainingPipeline` or using the provided ``scripts/training.py`` script
 
     - Generate new data from a trained model using Pyraug's :class:`~pyraug.pipelines.GenerationPipeline` or using the provided ``scripts/generation.py`` script
 
+There exist two ways to augment your data pretty straightforwardly using Pyraug's built-in functions. 
 
     
 
