@@ -41,10 +41,11 @@ extensions = extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosectionlabel",
-    'sphinxcontrib.bibtex',
+    "sphinxcontrib.bibtex",
 ]
 
 bibtex_bibfiles = ['references.bib']
+
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),

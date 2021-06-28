@@ -20,7 +20,8 @@ class TrainingPipeline(Pipeline):
     """
     This Pipeline provides an end to end way to train your VAE model.
     The trained model will be saved in ``output_dir`` stated in the 
-    :class:`~pyraug.base.TrainingConfig`. A folder ``training_YYYY-MM-DD_hh-mm-ss`` is 
+    :class:`~pyraug.trainers.training_config.TrainingConfig`. A folder 
+    ``training_YYYY-MM-DD_hh-mm-ss`` is 
     created where checkpoints and final model will be saved. Checkpoints are saved in 
     ``checkpoint_epoch_{epoch}`` folder (optimizer and training config 
     saved as well to resume training if needed) 

@@ -56,7 +56,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
             ],
             [
                 os.path.join(PATH, "data/loading/dummy_data_folder"),
-                (6, 3, 12, 12),
+                (5, 3, 12, 12),
                 os.path.join(PATH, "data/loading/dummy_data_folder")
             ]
         ])

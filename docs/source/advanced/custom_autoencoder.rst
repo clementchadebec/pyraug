@@ -19,7 +19,9 @@ for the encoder and decoder and metric (if applicable) which automatically adapt
         AttributeError: No input dimension provided !'input_dim' parameter of 
             BaseModelConfig instance must be set to 'data_shape' where the shape of the data is [mini_batch x data_shape] . Unable to build encoder automatically
 
+.. note::
 
+    In case you have different size of data, Pyraug will reshape it to the minimum size ``min_n_channels x min_height x min_width x ...``
 
 
 Hence building a basic network which used the basic provided architectures may be done as follows:
@@ -55,7 +57,7 @@ Your own Encoder should look as follows:
     >>> class MyEncoder(BaseEncoder):
     ...     def __init__(self, args):
     ...         BaseEncoder.__init__(self)
-                # your code goes here
+    ...         # your code goes here
 
     ...     def forward(self, x):
     ...         # your code goes here 

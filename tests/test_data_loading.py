@@ -32,7 +32,6 @@ class Test_Dataset:
 class Test_Data_Loading:
     @pytest.fixture(params=[
         os.path.join(PATH, 'data/loading/dummy_data_folder/example0.bmp'),
-        os.path.join(PATH, 'data/loading/dummy_data_folder/example0.gif'),
         os.path.join(PATH, 'data/loading/dummy_data_folder/example0.jpeg'),
         os.path.join(PATH, 'data/loading/dummy_data_folder/example0.jpg'),
         os.path.join(PATH, 'data/loading/dummy_data_folder/example0.png'),

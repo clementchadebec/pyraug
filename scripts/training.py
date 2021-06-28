@@ -8,7 +8,7 @@ import numpy as np
 from pyraug.models import RHVAE
 from pyraug.models.rhvae import RHVAEConfig
 from pyraug.trainers.training_config import TrainingConfig
-from pyraug.data.loader import ImageGetterFromFolder
+from pyraug.data.loaders import ImageGetterFromFolder
 from pyraug.data.preprocessors import DataProcessor
 from pyraug.trainers import Trainer
 

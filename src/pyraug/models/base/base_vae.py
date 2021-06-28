@@ -32,7 +32,7 @@ class BaseVAE(nn.Module):
 
         decoder (BaseDecoder): An instance of BaseDecoder (inheriting from `torch.nn.Module` which
             plays the role of encoder. This argument allows you to use your own neural networks
-            architectures if desired. If None is provided, a simple [Multi Layer Preception]
+            architectures if desired. If None is provided, a simple Multi Layer Preception
             (https://en.wikipedia.org/wiki/Multilayer_perceptron) is used. Default: None.
 
     .. note::
@@ -114,7 +114,10 @@ class BaseVAE(nn.Module):
         pass
 
     def save(self, dir_path):
-        """Method to save the model at a specific location
+        """Method to save the model at a specific location. It saves, the model weights as a 
+        ``models.pt`` file along with the model config as a ``model_config.json`` file. If the 
+        model to save used custom encoder (resp. decoder) provided by the user, these are also saved as 
+        ``decoder.pkl`` (resp. ``decoder.pkl``).  
         
         Args:
             dir_path (str): The path where the model should be saved. If the path

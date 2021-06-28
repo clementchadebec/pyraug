@@ -1,12 +1,14 @@
+
+.. _setting your config:
+
 ##################################
 Setting up your own configurations
 ##################################
-.. _setting-own-config:
+
 
 
 The augmentation methods relies on default parameters for the model, training and generation.
 Depending on your data these parameters should be modified. 
-
 
 
 ************************************************
@@ -14,8 +16,10 @@ Link between ``.json`` files and ``dataclasses``
 ************************************************
 
 
-In pyraug, the configurations of the models, trainers and samplers are stored and used as :class:`dataclasses.dataclass`. Nonetheless, any configuration class has a classmethod :class:`~pyraug.config.BaseConfig.from_json_file` coming from :class:`~pyraug.config.BaseConfig` allowing to directly load config from ``.json`` files into ``dataclasses``
+In pyraug, the configurations of the models, trainers and samplers are stored and used as :class:`dataclasses.dataclass` and all inherit from the :class:`~pyraug.config.BaseConfig`. Hence, any configuration class has a classmethod :class:`~pyraug.config.BaseConfig.from_json_file` coming from :class:`~pyraug.config.BaseConfig` allowing to directly load config from ``.json`` files into ``dataclasses``.
 
+
+.. _loading from json:
 
 Loading a config from a ``.json``
 =================================================
@@ -24,7 +28,7 @@ Say that you want to load a training configuration that is stored in a ``trainin
 
 .. code-block::
 
-    >>> from pyraug.trainers.training_config import TrainingConfigipyth
+    >>> from pyraug.trainers.training_config import TrainingConfig
     >>> config = TrainingConfig.from_json_file(
     ...     'scripts/configs/training_config.json')
     >>> config
@@ -39,8 +43,10 @@ where the ``.json`` that was parsed should look like
 
 
 
-You must ensure that the keys provided on the ``.json`` config file match the one in the required ``dataclass`` and that the value has the required tpe. For instance, if you want to provide your own ``training_config.json`` ensure that the keys in the ``.json`` file match the on in 
-:class:`~pyraug.trainers.training_config.TrainingConfig` with values having the correct type. See `type checking`_.
+You must ensure that the keys provided on the ``.json`` config file match the one in the required ``dataclass`` and that the value has the required tpe. 
+
+For instance, if you want to provide your own ``training_config.json`` in the pyraug scripts, ensure that the keys in the ``.json`` file match the on in 
+:class:`~pyraug.trainers.training_config.TrainingConfig` with values having the correct type. See `type checking`_. The provided scripts will indeed load ``dataclasses`` from the provided ``.json`` files.
 
 
 Writing a ``.json`` from a :class:`~pyraug.config.BaseConfig` instance.
@@ -103,7 +109,8 @@ A similar check is performed on the ``.json`` when the classmethod :class:`~pyra
 
 
 
-.. _model building default:
+.. _model-setting:
+
 ************************************************
 The model parameters
 ************************************************
@@ -115,20 +122,18 @@ Each model coded in Pyraug requires a :class:`ModelConfig` inheriting from :clas
 .. code-block:: python
 
     >>> from pyraug.models.my_model.my_model_config import MyModelConfig
-    >>> from pyraug.models.my_model.my_model import MyModelConfig
+    >>> from pyraug.models.my_model.my_model import MyModel
     >>> config = MyModelConfig(
     ...    input_dim=10 # Setting the data input dimension is needed if you do not use your own autoencoding architecture
-    ...    # you parameters goes here
+    ...    # your parameters go here
     ... )
     >>> m = MyModel(model_config=config) # Built the model
 
 
 Let now say that you want to override the model default parameters. The only thing you have to do is to pass you arguments to the ``dataclass`` :class:`ModelConfig`.
 
-Example:
-~~~~~~~~
 
-Let say, we want to change the temperature T in the metric in a :class:`~pyraug.models.RHVAE` model which defaults to 1.5 to 2.
+Let say, we want to change the temperature T in the metric in a :class:`~pyraug.models.RHVAE` model which defaults to 1.5 and raise it to 2. Well simply run the following.
 
 
 .. code-block:: python
@@ -140,6 +145,10 @@ Let say, we want to change the temperature T in the metric in a :class:`~pyraug.
     >>> m.temperature
     Parameter containing:
     tensor([2.])
+
+
+
+.. _trainer-setting:
 
 ************************************************
 The :class:`~pyraug.trainers.Trainer` parameters
@@ -162,4 +171,4 @@ Say you want to train your model for 10 epochs, with no early stopping on the tr
     TrainingConfig(output_dir=None, batch_size=50, max_epochs=10, learning_rate=0.1, train_early_stopping=None, eval_early_stopping=None, steps_saving=1000, seed=8, no_cuda=False, verbose=True)
 
 
-You can find a comprehensive description of any parameters of the :class:`~pyraug.trainers.Trainer` you can set in :class:`~pyraug.trainers.training_config.TrainingConfig` 
+You can find a comprehensive description of any parameters of the :class:`~pyraug.trainers.Trainer` you can set in :class:`~pyraug.trainers.training_config.TrainingConfig`

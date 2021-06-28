@@ -51,7 +51,7 @@ class Test_Apply_Transforms:
         [[torch.tensor([[10.0, 1]]), torch.tensor([[2, 0.0]]), torch.tensor([[0.0, 1.0]])], (3, 1, 2)],
         [[torch.tensor([[[10.0, 1], [0.0, 1]]]), torch.tensor([[[2, 0.0], [0.0, 1.0]]])], (2, 1, 2, 2)],
         [torch.load(os.path.join(PATH, 'data/unnormalized_mnist_data_list_of_array')), (3, 1, 28, 28)],
-        [ImageGetterFromFolder.load(os.path.join(PATH, 'data/loading/dummy_data_folder')), (6, 3, 12, 12)]
+        [ImageGetterFromFolder.load(os.path.join(PATH, 'data/loading/dummy_data_folder')), (5, 3, 12, 12)]
     ]
     )
     def unormalized_data(self, request):
