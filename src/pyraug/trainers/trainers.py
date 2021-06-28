@@ -325,12 +325,12 @@ class Trainer:
                         break
                 
             # save checkpoints
-            if epoch % self.training_config.steps_saving == 0:
+            if self.training_config.steps_saving is not None and epoch % self.training_config.steps_saving == 0:
                 self.save_checkpoint(dir_path=training_dir, epoch=epoch)
-                logger.info(f'Saved checkpoint at epoch {epoch}')
+                logger.info(f'Saved checkpoint at epoch {epoch}\n')
 
                 if log_verbose:
-                    file_logger.info(f'Saved checkpoint at epoch {epoch}')
+                    file_logger.info(f'Saved checkpoint at epoch {epoch}\n')
 
             if log_verbose and epoch % 10 == 0:
                 if self.eval_dataset is not None:

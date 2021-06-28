@@ -47,7 +47,7 @@ class TrainingConfig(BaseConfig):
     learning_rate: float = 1e-4
     train_early_stopping:Union[int, None] = 50
     eval_early_stopping: Union[int, None] = None
-    steps_saving: int = 1000
+    steps_saving: Union[int, None] = None
     seed: int = 8
     no_cuda: bool = False
     verbose: bool = True

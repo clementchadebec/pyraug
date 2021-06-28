@@ -156,8 +156,19 @@ Pyraug provides you with two pipelines that you may use to either train a model 
 Launching a model training
 --------------------------------------------------
 
-To launch a model training, you only need instantiate your own model.
-For instance, if you want to instantiate a basic :class:`~pyraug.models.RHVAE` run:
+To launch a model training, you only need to call the :class:`~pyraug.pipelines.TrainingPipeline`. 
+In its most basic version the :class:`~pyraug.pipelines.TrainingPipeline` can be built without any arguments.
+This will by default train a :class:`~pyraug.models.RHVAE` model with default autoencoding architecture and parameters.
+
+.. code-block:: python
+
+    >>> from pyraug.pipelines import TrainingPipeline
+    >>> pipeline = TrainingPipeline()
+    >>> pipeline(train_data=dataset_to_augment)
+
+where ``dataset_to_augment`` is either a :class:`numpy.ndarray`, :class:`torch.Tensor` or a path to a folder where each file is a data (handled data format are ``.pt``, ``.nii``, ``.nii.gz``, ``.bmp``, ``.jpg``, ``.jpeg``, ``.png``). 
+
+More generally, you can instantiate your own :class:`pyraug.models.BaseVAE` model and train it with the :class:`~pyraug.pipelines.TrainingPipeline`. For instance, if you want to instantiate a basic :class:`~pyraug.models.RHVAE` run:
 
 
 .. code-block:: python
@@ -176,7 +187,7 @@ Then the :class:`~pyraug.pipelines.TrainingPipeline` can be launched by running:
 
     >>> from pyraug.pipelines import TrainingPipeline
     >>> pipe = TrainingPipeline(model=model)
-    >>> pipe(train_data='path/to/your/data/folder')
+    >>> pipe(train_data=dataset_to_augment)
 
 At the end of training, the model weights ``models.pt`` and model config ``model_config.json`` file 
 will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-mm-ss/final_model``. 
