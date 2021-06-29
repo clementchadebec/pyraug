@@ -58,7 +58,8 @@ def main(args):
     training_config = TrainingConfig.from_json_file(args.path_to_training_config)
 
     train_data = ImageGetterFromFolder.load(args.path_to_train_data)
-    train_data = DataProcessor.process_data(train_data)
+    data_processor = DataProcessor(data_normalization_type='individual_min_max_scaling')
+    train_data = data_processor.process_data(train_data)
     train_dataset = DataProcessor.to_dataset(train_data)
 
     print(train_dataset.data.shape, train_dataset.data.max())
@@ -68,7 +69,7 @@ def main(args):
 
     if args.path_to_eval_data is not None:
         eval_data = ImageGetterFromFolder(args.path_to_eval_data)
-        eval_data = DataProcessor.process_data(eval_data)
+        eval_data = data_processor.process_data(eval_data)
         eval_dataset = DataProcessor.to_dataset(eval_data)
 
 
