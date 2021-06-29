@@ -2,7 +2,7 @@
 perform end-to-end operation such as model training or generation. A typical Pipeline is composed by 
 several Pyraug's instances which are articulated together.
 
-A __call__ function is defined and use to launch the Pipeline. """
+A :class:`__call__` function is defined and used to launch the Pipeline. """
 
 from pyraug.pipelines.generation import GenerationPipeline
 from pyraug.pipelines.training import TrainingPipeline
