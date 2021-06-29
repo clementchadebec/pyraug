@@ -134,7 +134,7 @@ Then, to launch the data generation process from a trained model, you only need 
 
     $ python scripts/training.py --num_samples 10 --path_model_folder 'path/to/your/trained/model/folder' 
 
-The generated data is stored in several ``.pt`` files in ``outputs/my_generated_data_from_script/generation_YYYY-MM-DD_hh_mm_ss``. By default, it stores batch data of 50 samples.
+The generated data is stored in several ``.pt`` files in ``outputs/my_generated_data_from_script/generation_YYYY-MM-DD_hh_mm_ss``. By default, it stores batch data of 500 samples.
 
 .. tip::
     In the simplest configuration, default ``sampler_config.json`` is used. You can easily override these parameters by defining your own ``.json`` file and passing it the to the parser arguments.
@@ -254,7 +254,7 @@ will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-
         ...    *my_args, **my_kwargs
         ... ) # Set up training config
         >>> pipe = TrainingPipeline(
-        ...    model = model, training_config=custom_training_config
+        ...    model=model, training_config=custom_training_config
         ... ) # Build Pipeline
         
     See :ref:`setting your config` and tutorials for a more in depth example.
@@ -276,7 +276,7 @@ To launch the data generation process from a trained model, run the following.
     ... ) # define pipeline
     >>> pipe(samples_number=10) # This will generate 10 data points
 
-The generated data is in ``.pt`` files in ``dummy_output_dir/generation_YYYY-MM-DD_hh-mm-ss``. By default, it stores batch data of 50 samples.
+The generated data is in ``.pt`` files in ``dummy_output_dir/generation_YYYY-MM-DD_hh-mm-ss``. By default, it stores batch data of 500 samples.
 
 .. note::
 
@@ -294,14 +294,14 @@ The generated data is in ``.pt`` files in ``dummy_output_dir/generation_YYYY-MM-
         >>> from pyraug.models.rhvae import RHVAESampler
         >>> from pyraug.models.rhvae import RHVAESamplerConfig
         >>> from pyraug.pipelines import GenerationPipeline
-        >>> custom_sampler_config = RHVAEConfig(
+        >>> custom_sampler_config = RHVAESamplerConfig(
         ...    *my_args, **my_kwargs
         ... ) # Set up sampler config
         >>> custom_sampler = RHVAESampler(
         ...     model=model, sampler_config=custom_sampler_config
         ... ) # Build sampler
         >>> pipe = generationPipeline(
-        ...    model = model, sampler=custom_sampler
+        ...    model=model, sampler=custom_sampler
         ... ) # Build Pipeline
         
     See :ref:`setting your config` and tutorials for a more in depth example.

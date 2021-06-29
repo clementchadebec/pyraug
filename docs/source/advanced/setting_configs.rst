@@ -147,6 +147,46 @@ Let say, we want to change the temperature T in the metric in a :class:`~pyraug.
     tensor([2.])
 
 
+Check out the documentation to see the whole list of parameter you can amend.
+
+.. _trainer-setting:
+
+
+************************************************
+The sampler parameters
+************************************************
+
+To generate from a Pyraug's model a :class:`ModelSampler` inheriting from :class:`~pyraug.models.base.base_sampler.BaseSampler` is used. A :class:`ModelSampler` is instantiated with a Pyraug's model and a :class:`ModelSamplerConfig`. Hence, likewise the VAE models, the sampler parameters can be easily amended as follows   
+
+.. code-block:: python
+
+    >>> from pyraug.models.my_model.my_model_config import MyModelSamplerConfig
+    >>> from pyraug.models.my_model.my_model_sampler import MyModelSampler
+    >>> config = MyModelSamplerConfig(
+    ...    # your parameters go here
+    ... )
+    >>> m = MyModelSample(model=my_model, sampler_config=config) # Built the model
+
+
+Let now say that you want to override the sampler default parameters. The only thing you have to do is to pass you arguments to the ``dataclass`` :class:`ModelSamplerConfig`.
+
+Let say, we want to change the number of leapfrog steps in the :class:`~pyraug.models.rhvae.RHVAESampler` config model which defaults to 15 and make it to 5. Well your code should look like the following.
+
+
+.. code-block:: python
+
+        >>> from pyraug.models import RHVAE
+        >>> from pyraug.models.rhvae import RHVAESampler, RHVAESamplerConfig, RHVAEConfig
+        >>> custom_sampler_config = RHVAESamplerConfig(
+        ...   n_lf=5
+        ... ) # Set up sampler config
+        >>> custom_sampler = RHVAESampler(
+        ...     model=model, sampler_config=custom_sampler_config
+        ... ) # Build sampler
+        >>> custom_sampler.n_lf
+        ... tensor([5])
+
+Check out the documentation to see the whole list of parameter you can amend.
 
 .. _trainer-setting:
 
@@ -154,13 +194,13 @@ Let say, we want to change the temperature T in the metric in a :class:`~pyraug.
 The :class:`~pyraug.trainers.Trainer` parameters
 ************************************************
 
-Likewise the VAE models, the instance :class:`~pyraug.trainers.Trainer` is created with default parameters and you can easily amend them the same way it is done for the models. 
+Likewise the VAE models, the instance :class:`~pyraug.trainers.Trainer` can be created with default parameters or you can easily amend them the same way it is done for the models. 
 
 
 Example:
 ~~~~~~~~
 
-Say you want to train your model for 10 epochs, with no early stopping on the train et and a learning_rate of 1e-1
+Say you want to train your model for 10 epochs, with no early stopping on the train et and a learning_rate of 0.1
 
 .. code-block:: python
 
