@@ -64,7 +64,7 @@ class Trainer:
 
         if not os.path.exists(training_config.output_dir):
             os.makedirs(training_config.output_dir)
-            logger.info(f"Created {training_config.output_dir} folder since did not exist.")
+            logger.info(f"Created {training_config.output_dir} folder since did not exist.\n")
 
             
 
@@ -244,8 +244,9 @@ class Trainer:
             # if dir does not exist create it
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)
-                logger.info(f"Created {log_dir} folder since did not exists. Training logs will be "
-                    "recodered here.\n")
+                logger.info(f"Created {log_dir} folder since did not exists.")
+                logger.info("Training logs will be recodered here.\n")
+                logger.info(" -> Training can be monitored here.\n")
 
             # create and set logger
             log_name = f"training_logs_{self._training_signature}"
