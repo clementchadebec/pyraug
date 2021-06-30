@@ -25,7 +25,7 @@ def model_configs_no_input_dim(request):
         latent_dim=5
     ),
     BaseModelConfig(
-        input_dim=1e6,
+        input_dim=1e4,
         latent_dim=5
     )
 ])
