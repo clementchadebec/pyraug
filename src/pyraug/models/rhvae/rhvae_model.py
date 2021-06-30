@@ -38,6 +38,10 @@ class RHVAE(BaseVAE):
 
     Args:
         model_config (RHVAEConfig): A model configuration setting the main parameters of the model
+
+    .. note::
+        For high dimensional data we advice you to provide you own network architectures. With the 
+        provided MLP you may end up with a ``MemoryError``.
     """
 
     def __init__(

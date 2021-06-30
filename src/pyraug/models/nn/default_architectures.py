@@ -15,9 +15,13 @@ class Encoder_MLP(BaseEncoder):
         self.input_dim = args.input_dim
         self.latent_dim = args.latent_dim
 
-        self.layers = nn.Sequential(nn.Linear(args.input_dim, 500), nn.ReLU())
-        self.mu = nn.Linear(500, self.latent_dim)
-        self.std = nn.Linear(500, self.latent_dim)
+        self.layers = nn.Sequential(
+            nn.Linear(args.input_dim, 500),
+            nn.ReLU(),
+             nn.Linear(500, 400),
+            nn.ReLU())
+        self.mu = nn.Linear(400, self.latent_dim)
+        self.std = nn.Linear(400, self.latent_dim)
 
     def forward(self, x):
         out = self.layers(x.reshape(-1, self.input_dim))
@@ -29,48 +33,9 @@ class Decoder_MLP(BaseDecoder):
         BaseDecoder.__init__(self)
 
         self.layers = nn.Sequential(
-            nn.Linear(args.latent_dim, 500),
-            nn.ReLU(),
-            nn.Linear(500, args.input_dim),
-            nn.Sigmoid(),
-        )
-
-    def forward(self, z):
-        return self.layers(z)
-
-        
-class Encoder_MLP_High(BaseEncoder):
-    def __init__(self, args: dict):
-        BaseEncoder.__init__(self)
-
-    
-        self.input_dim = args.input_dim
-        self.latent_dim = args.latent_dim
-
-        self.layers = nn.Sequential(
-            nn.Linear(args.input_dim, 500),
-            nn.ReLU(),
-            nn.Linear(500, 500),
-            nn.ReLU(),
-            nn.Linear(500, 400))
-        self.mu = nn.Linear(400, self.latent_dim)
-        self.std = nn.Linear(400, self.latent_dim)
-
-    def forward(self, x):
-        out = self.layers(x.reshape(-1, self.input_dim))
-        return self.mu(out), self.std(out)
-
-
-class Decoder_MLP_High(BaseDecoder):
-    def __init__(self, args: dict):
-        BaseDecoder.__init__(self)
-
-        self.layers = nn.Sequential(
             nn.Linear(args.latent_dim, 400),
             nn.ReLU(),
-            nn.Linear(400, 500),
-            nn.ReLU(),
-            nn.Linear(500, 500),
+             nn.Linear(400, 500),
             nn.ReLU(),
             nn.Linear(500, args.input_dim),
             nn.Sigmoid(),
@@ -78,6 +43,7 @@ class Decoder_MLP_High(BaseDecoder):
 
     def forward(self, z):
         return self.layers(z)
+
 
 class Metric_MLP(BaseMetric):
     def __init__(self, args: dict):
@@ -114,75 +80,3 @@ class Metric_MLP(BaseMetric):
         L = L + torch.diag_embed(h21.exp())
 
         return L
-
-
-class Encoder_Conv(BaseEncoder):
-    def __init__(self, args):
-        BaseEncoder.__init__(self)
-        self.input_dim = args.input_dim
-        self.latent_dim = args.latent_dim
-        self.n_channels = args.n_channels
-
-        self.layers = nn.Sequential(
-            nn.Conv2d(
-                self.n_channels, out_channels=32, kernel_size=3, stride=2, padding=1
-            ),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.Conv2d(32, out_channels=32, kernel_size=3, stride=2, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.Conv2d(32, out_channels=32, kernel_size=3, stride=2, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-        )
-
-        self.fc1 = nn.Sequential(nn.Linear(512, 400), nn.ReLU())
-
-        self.mu = nn.Linear(400, self.latent_dim)
-        self.std = nn.Linear(400, self.latent_dim)
-
-    def forward(self, x):
-        out = self.layers(x.reshape(-1, self.n_channels, x.shape[-2], x.shape[-1]))
-        out = self.fc1(out.reshape(x.shape[0], -1))
-        return self.mu(out), self.std(out)
-
-
-class Decoder_Conv(BaseDecoder):
-    def __init__(self, args):
-
-        BaseDecoder.__init__(self)
-
-        self.input_dim = args.input_dim
-        self.latent_dim = args.latent_dim
-        self.n_channels = args.n_channels
-
-        self.fc1 = nn.Sequential(
-            nn.Linear(self.latent_dim, 400), nn.ReLU(), nn.Linear(400, 512), nn.ReLU()
-        )
-
-        self.layers = nn.Sequential(
-            nn.ConvTranspose2d(32, out_channels=32, kernel_size=3, stride=2, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.ConvTranspose2d(
-                32,
-                out_channels=32,
-                kernel_size=3,
-                stride=2,
-                padding=1,
-                output_padding=1,
-            ),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.ConvTranspose2d(
-                32, out_channels=3, kernel_size=3, stride=2, padding=1, output_padding=1
-            ),
-            nn.BatchNorm2d(3),
-            nn.ReLU(),
-        )
-
-    def forward(self, z):
-        out = self.fc1(z)
-        out = self.layers(out.reshape(z.shape[0], 32, 4, 4))
-        return out

@@ -123,6 +123,10 @@ will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-
 
     See :ref:`setting your config` and tutorials for a more in depth example.
 
+.. note::
+    For high dimensional data we advice you to provide you own network architectures. With the 
+    provided MLP you may end up with a ``MemoryError``.
+
 
 
 Launching data generation:
@@ -258,6 +262,10 @@ will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-
         ... ) # Build Pipeline
         
     See :ref:`setting your config` and tutorials for a more in depth example.
+
+.. note::
+    For high dimensional data we advice you to provide you own network architectures. With the 
+    provided MLP you may end up with a ``MemoryError``.
 
 
 Launching data generation

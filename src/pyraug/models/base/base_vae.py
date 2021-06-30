@@ -14,7 +14,7 @@ from .base_utils import ModelOuput
 from .base_config import BaseModelConfig
 
 from pyraug.models.nn.default_architectures import (
-    Encoder_MLP,Decoder_MLP, Encoder_MLP_High, Decoder_MLP_High)
+    Encoder_MLP,Decoder_MLP)
 
 
 
@@ -36,7 +36,8 @@ class BaseVAE(nn.Module):
             (https://en.wikipedia.org/wiki/Multilayer_perceptron) is used. Default: None.
 
     .. note::
-        If you provide your own encoder or decoder networks
+        For high dimensional data we advice you to provide you own network architectures. With the 
+        provided MLP you may end up with a ``MemoryError``.
     """
 
     def __init__(
@@ -59,10 +60,7 @@ class BaseVAE(nn.Module):
                 "the shape of the data is [mini_batch x data_shape]. Unable to build encoder " 
                 "automatically")
 
-            if model_config.input_dim >= 1e5:
-                encoder = Encoder_MLP_High(model_config)
-            else:
-                encoder = Encoder_MLP(model_config)
+            encoder = Encoder_MLP(model_config)
             self.model_config.uses_default_encoder = True
 
         else:
@@ -75,10 +73,7 @@ class BaseVAE(nn.Module):
                 "the shape of the data is [mini_batch x data_shape]. Unable to build decoder" 
                 "automatically")
 
-            if model_config.input_dim >= 1e5:
-                decoder = Decoder_MLP_High(model_config)
-            else:
-                decoder = Decoder_MLP(model_config)
+            decoder = Decoder_MLP(model_config)
             self.model_config.uses_default_decoder = True
 
         else:
