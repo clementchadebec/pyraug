@@ -246,6 +246,7 @@ class Trainer:
                 os.makedirs(log_dir)
                 logger.info(f"Created {log_dir} folder since did not exists.")
                 logger.info("Training logs will be recodered here.\n")
+                logger.info(" -> Training can be monitored here.\n")
 
             # create and set logger
             log_name = f"training_logs_{self._training_signature}"
