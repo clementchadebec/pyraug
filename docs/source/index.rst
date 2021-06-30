@@ -17,7 +17,6 @@ This library implements the
 
    background
    getting_started
-   math_behind
    advanced_use
 
 
