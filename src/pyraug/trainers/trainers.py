@@ -248,7 +248,9 @@ class Trainer:
                     "recodered here.\n")
 
             # create and set logger
-            file_logger = logging.getLogger("log_dir")
+            log_name = f"training_logs_{self._training_signature}"
+
+            file_logger = logging.getLogger(log_name)
             file_logger.setLevel(logging.INFO)
             f_handler = logging.FileHandler(os.path.join(
                 log_dir, f"training_logs_{self._training_signature}.log"))

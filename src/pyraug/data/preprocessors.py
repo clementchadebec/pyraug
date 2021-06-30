@@ -294,8 +294,8 @@ class DataProcessor:
         if self.data_normalization is not None:
             data = self.normalize_data(data)
             logger.info(f'Data normalized using {self.data_normalization}.')
-            logger.info(" -> If this is not the desired behavior pass an instance set the "
-                "data_normalization attribute of DataProceor instance to False\n")
+            logger.info(" -> If this is not the desired behavior pass an instance of DataProcess "
+                "with 'data_normalization_type' attribute set to desired normalization or None\n")
 
         if data.min() < 0 or data .max() > 1:
             raise RuntimeError("Data must be normalized between 0 and 1. You can change "
