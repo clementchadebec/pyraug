@@ -1,4 +1,5 @@
-demo_data
+/demo_data/cifar-10-batches-py
+/demo_data/MNIST
 __pycache__
 #docs
 src/pyraug.egg-info
