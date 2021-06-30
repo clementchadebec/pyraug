@@ -1,4 +1,6 @@
-data
+data/cifar-10-python.tar.gz
+data/cifar-10-batches-py/
+data/MNIST/
 __pycache__
 notebooks
 #docs
