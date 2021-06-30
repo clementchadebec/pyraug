@@ -285,9 +285,9 @@ The generated data is in ``.pt`` files in ``dummy_output_dir/generation_YYYY-MM-
 
 
 .. tip::
-   In the simplest configuration, defaults sampler parameters are used. You can easily override these parameters by instantiating your own :class:`~pyraug.models.base.SamplerConfig` and passing it the to the :class:`~pyraug.pipelines.Generation`.
+   In the simplest configuration, defaults sampler parameters are used. You can easily override these parameters by instantiating your own :class:`~pyraug.models.base.SamplerConfig` and passing it the to the :class:`~pyraug.pipelines.GenerationPipeline`.
    
-   Example for a :class:`~pyraug.models.RHVAESampler` run:
+   Example for a :class:`~pyraug.models.rhvae.RHVAESampler` run:
 
     .. code-block:: python
 
