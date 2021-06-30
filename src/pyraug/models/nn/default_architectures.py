@@ -17,11 +17,9 @@ class Encoder_MLP(BaseEncoder):
 
         self.layers = nn.Sequential(
             nn.Linear(args.input_dim, 500),
-            nn.ReLU(),
-             nn.Linear(500, 400),
             nn.ReLU())
-        self.mu = nn.Linear(400, self.latent_dim)
-        self.std = nn.Linear(400, self.latent_dim)
+        self.mu = nn.Linear(500, self.latent_dim)
+        self.std = nn.Linear(500, self.latent_dim)
 
     def forward(self, x):
         out = self.layers(x.reshape(-1, self.input_dim))
@@ -33,9 +31,7 @@ class Decoder_MLP(BaseDecoder):
         BaseDecoder.__init__(self)
 
         self.layers = nn.Sequential(
-            nn.Linear(args.latent_dim, 400),
-            nn.ReLU(),
-             nn.Linear(400, 500),
+            nn.Linear(args.latent_dim, 500),
             nn.ReLU(),
             nn.Linear(500, args.input_dim),
             nn.Sigmoid(),
