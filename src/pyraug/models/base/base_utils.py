@@ -1,10 +1,9 @@
 from collections import OrderedDict
-import typing
-from typing import Tuple, Any
+from typing import Any, Tuple
 
 
 class ModelOuput(OrderedDict):
-    """Base ModelOuput class fixing the output type from the models. This class is inspired from 
+    """Base ModelOuput class fixing the output type from the models. This class is inspired from
     the ``ModelOutput`` class from hugginface transformres library"""
 
     def __getitem__(self, k):

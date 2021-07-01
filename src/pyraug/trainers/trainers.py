@@ -1,27 +1,18 @@
-
-import os
-import typing
-from typing import Any, Optional, Tuple, Union, Dict, Any
-import logging
-from copy import deepcopy
 import datetime
+import logging
+import os
+from copy import deepcopy
+from typing import Any, Dict, Optional
 
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-
-from pyraug.customexception import *
-
-
-
+from pyraug.customexception import ModelError
 from pyraug.data.datasets import BaseDataset
 from pyraug.models import BaseVAE
 from pyraug.trainers.trainer_utils import set_seed
 from pyraug.trainers.training_config import TrainingConfig
-from pyraug.customexception import ModelError
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +20,7 @@ logger = logging.getLogger(__name__)
 console = logging.StreamHandler()
 logger.addHandler(console)
 logger.setLevel(logging.INFO)
+
 
 class Trainer:
     """Trainer is the main class to perform model training.
@@ -41,7 +33,7 @@ class Trainer:
         training_args (TrainingConfig): The training arguments summarizing the main parameters used
             for training. If None, a basic training instance of :class:`TrainingConfig` is used.
             Default: None.
-         
+
         optimizer (~torch.optim.Optimizer): An instance of `torch.optim.Optimizer` used for
             training. If None, a :class:`~torch.optim.Adam` optimizer is used. Default: None.
     """
@@ -50,30 +42,33 @@ class Trainer:
         self,
         model: BaseVAE,
         train_dataset: BaseDataset,
-        eval_dataset: Optional[BaseDataset]=None,
+        eval_dataset: Optional[BaseDataset] = None,
         training_config: Optional[TrainingConfig] = None,
-        optimizer: Optional[torch.optim.Optimizer] = None
+        optimizer: Optional[torch.optim.Optimizer] = None,
     ):
-    
+
         if training_config is None:
             training_config = TrainingConfig()
 
         if training_config.output_dir is None:
-            output_dir = 'dummy_output_dir'
+            output_dir = "dummy_output_dir"
             training_config.output_dir = output_dir
 
         if not os.path.exists(training_config.output_dir):
             os.makedirs(training_config.output_dir)
-            logger.info(f"Created {training_config.output_dir} folder since did not exist.\n")
+            logger.info(
+                f"Created {training_config.output_dir} folder since did not exist.\n"
+            )
 
-            
-
-        
         self.training_config = training_config
 
         set_seed(self.training_config.seed)
 
-        device = "cuda" if torch.cuda.is_available() and not training_config.no_cuda else 'cpu'
+        device = (
+            "cuda"
+            if torch.cuda.is_available() and not training_config.no_cuda
+            else "cpu"
+        )
 
         # place model on device
         model = model.to(device)
@@ -86,7 +81,6 @@ class Trainer:
         else:
             optimizer = self._set_optimizer_on_device(optimizer, device)
 
-
         self.train_dataset = train_dataset
         self.eval_dataset = eval_dataset
 
@@ -96,7 +90,7 @@ class Trainer:
         self.device = device
 
         # set early stopping flags
-        self._set_earlystopping_flags(train_dataset, eval_dataset, training_config)        
+        self._set_earlystopping_flags(train_dataset, eval_dataset, training_config)
 
         # Define the loaders
         train_loader = self.get_train_dataloader(train_dataset)
@@ -107,11 +101,9 @@ class Trainer:
         else:
             eval_loader = None
 
-
         self.train_loader = train_loader
         self.eval_loader = eval_loader
 
-    
     def get_train_dataloader(
         self, train_dataset: BaseDataset
     ) -> torch.utils.data.DataLoader:
@@ -119,21 +111,19 @@ class Trainer:
         return DataLoader(
             dataset=train_dataset,
             batch_size=self.training_config.batch_size,
-            shuffle=True
+            shuffle=True,
         )
 
     def get_eval_dataloader(
-        self, eval_dataset: BaseDataset) -> torch.utils.data.DataLoader:
+        self, eval_dataset: BaseDataset
+    ) -> torch.utils.data.DataLoader:
         return DataLoader(
             dataset=eval_dataset,
             batch_size=self.training_config.batch_size,
-            shuffle=False
+            shuffle=False,
         )
-        
-    def set_default_optimizer(
-        self,
-        model: BaseVAE
-    ) -> torch.optim.Optimizer:
+
+    def set_default_optimizer(self, model: BaseVAE) -> torch.optim.Optimizer:
 
         optimizer = optim.Adam(
             model.parameters(), lr=self.training_config.learning_rate
@@ -147,14 +137,17 @@ class Trainer:
             model(train_dataset)
 
         except Exception as e:
-            raise ModelError("Error when calling forward method from model. Potential issues: \n"
+            raise ModelError(
+                "Error when calling forward method from model. Potential issues: \n"
                 " - Wrong model architecture -> check encoder, decoder and metric architecture if "
                 "you provide yours \n"
                 " - The data input dimension provided is wrong -> when no encoder, decoder or metric "
-                "provided, a network is built automatically but requires the shape of the flatten " 
+                "provided, a network is built automatically but requires the shape of the flatten "
                 "input data.\n"
-                f"Exception raised: {type(e)} with message: " + str(e)) from e
-#
+                f"Exception raised: {type(e)} with message: " + str(e)
+            ) from e
+
+    #
     def _set_earlystopping_flags(self, train_dataset, eval_dataset, training_config):
 
         # Initialize early_stopping flags
@@ -167,10 +160,9 @@ class Trainer:
         # Check if eval_dataset is provided
         if eval_dataset is not None and training_config.eval_early_stopping is not None:
             self.make_eval_early_stopping = True
-            
+
             # By default we make the early stopping on evaluation dataset
             self.make_train_early_stopping = False
-
 
     def _set_optimizer_on_device(self, optim, device):
         for param in optim.state.values():
@@ -187,27 +179,25 @@ class Trainer:
                             subparam._grad.data = subparam._grad.data.to(device)
 
         return optim
-    
 
     def _set_inputs_to_device(self, inputs: Dict[str, Any]):
-        
+
         inputs_on_device = inputs
 
-        if self.device == 'cuda':
+        if self.device == "cuda":
             cuda_inputs = dict.fromkeys(inputs)
 
             for key in inputs.keys():
                 if torch.is_tensor(inputs[key]):
                     cuda_inputs[key] = inputs[key].cuda()
-                
+
                 else:
-                    cuda_inputs = inputs[keys]
+                    cuda_inputs = inputs[key]
             inputs_on_device = cuda_inputs
 
         return inputs_on_device
-        
-    def train(self, log_output_dir: str = None
-    ):
+
+    def train(self, log_output_dir: str = None):
         """This function is the main training function
 
         Args:
@@ -219,8 +209,9 @@ class Trainer:
 
         logger.info("Model passed sanity check !\n")
 
-        self._training_signature = str(
-            datetime.datetime.now())[0:19].replace(" ", "_").replace(":", "-")
+        self._training_signature = (
+            str(datetime.datetime.now())[0:19].replace(" ", "_").replace(":", "-")
+        )
 
         training_dir = os.path.join(
             self.training_config.output_dir, f"training_{self._training_signature}"
@@ -228,18 +219,17 @@ class Trainer:
 
         if not os.path.exists(training_dir):
             os.makedirs(training_dir)
-            logger.info(f"Created {training_dir}. \n"
-                "Training config, checkpoints and final model will be saved here.\n")
+            logger.info(
+                f"Created {training_dir}. \n"
+                "Training config, checkpoints and final model will be saved here.\n"
+            )
 
         log_verbose = False
-
-        
 
         # set up log file
         if log_output_dir is not None:
             log_dir = log_output_dir
             log_verbose = True
-
 
             # if dir does not exist create it
             if not os.path.exists(log_dir):
@@ -253,8 +243,9 @@ class Trainer:
 
             file_logger = logging.getLogger(log_name)
             file_logger.setLevel(logging.INFO)
-            f_handler = logging.FileHandler(os.path.join(
-                log_dir, f"training_logs_{self._training_signature}.log"))
+            f_handler = logging.FileHandler(
+                os.path.join(log_dir, f"training_logs_{self._training_signature}.log")
+            )
             f_handler.setLevel(logging.INFO)
             file_logger.addHandler(f_handler)
 
@@ -270,9 +261,8 @@ class Trainer:
                 f" - checkpoint saving every {self.training_config.steps_saving}\n"
             )
 
-            file_logger.info(f'Model Architecture: {self.model}\n')
-            file_logger.info(f'Optimizer: {self.optimizer}\n')
-
+            file_logger.info(f"Model Architecture: {self.model}\n")
+            file_logger.info(f"Optimizer: {self.optimizer}\n")
 
         logger.info("Successfully launched training !")
 
@@ -286,11 +276,9 @@ class Trainer:
         for epoch in range(1, self.training_config.max_epochs):
 
             epoch_train_loss = self.train_step()
-            
 
             if self.eval_dataset is not None:
                 epoch_eval_loss = self.eval_step()
-
 
             # early stopping
             if self.make_eval_early_stopping:
@@ -302,11 +290,18 @@ class Trainer:
                 else:
                     epoch_es_eval += 1
 
-                    if epoch_es_eval >= self.training_config.eval_early_stopping and log_verbose:
-                        logger.info(f"Training ended at epoch {epoch}! "
-                            f" Eval loss did not improve for {epoch_es_eval} epochs.")
-                        file_logger.info(f"Training ended at epoch {epoch}! "
-                            f" Eval loss did not improve for {epoch_es_eval} epochs.")
+                    if (
+                        epoch_es_eval >= self.training_config.eval_early_stopping
+                        and log_verbose
+                    ):
+                        logger.info(
+                            f"Training ended at epoch {epoch}! "
+                            f" Eval loss did not improve for {epoch_es_eval} epochs."
+                        )
+                        file_logger.info(
+                            f"Training ended at epoch {epoch}! "
+                            f" Eval loss did not improve for {epoch_es_eval} epochs."
+                        )
 
                         break
 
@@ -319,21 +314,31 @@ class Trainer:
                 else:
                     epoch_es_train += 1
 
-                    if epoch_es_train >= self.training_config.train_early_stopping and log_verbose:
-                        logger.info(f"Training ended at epoch {epoch}! "
-                            f" Train loss did not improve for {epoch_es_train} epochs.")
-                        file_logger.info(f"Training ended at epoch {epoch}! "
-                            f" Train loss did not improve for {epoch_es_train} epochs.")
+                    if (
+                        epoch_es_train >= self.training_config.train_early_stopping
+                        and log_verbose
+                    ):
+                        logger.info(
+                            f"Training ended at epoch {epoch}! "
+                            f" Train loss did not improve for {epoch_es_train} epochs."
+                        )
+                        file_logger.info(
+                            f"Training ended at epoch {epoch}! "
+                            f" Train loss did not improve for {epoch_es_train} epochs."
+                        )
 
                         break
-                
+
             # save checkpoints
-            if self.training_config.steps_saving is not None and epoch % self.training_config.steps_saving == 0:
+            if (
+                self.training_config.steps_saving is not None
+                and epoch % self.training_config.steps_saving == 0
+            ):
                 self.save_checkpoint(dir_path=training_dir, epoch=epoch)
-                logger.info(f'Saved checkpoint at epoch {epoch}\n')
+                logger.info(f"Saved checkpoint at epoch {epoch}\n")
 
                 if log_verbose:
-                    file_logger.info(f'Saved checkpoint at epoch {epoch}\n')
+                    file_logger.info(f"Saved checkpoint at epoch {epoch}\n")
 
             if log_verbose and epoch % 10 == 0:
                 if self.eval_dataset is not None:
@@ -375,13 +380,12 @@ class Trainer:
                             f"- Current Train loss: {epoch_train_loss:.2f}\n"
                         )
 
-        final_dir = os.path.join(training_dir, 'final_model')
+        final_dir = os.path.join(training_dir, "final_model")
 
         self.save_model(dir_path=final_dir)
         logger.info("----------------------------------")
         logger.info("Training ended!")
         logger.info(f"Saved final model in {final_dir}")
-
 
     def eval_step(self):
         """Perform an evaluation step
@@ -394,9 +398,8 @@ class Trainer:
 
         epoch_loss = 0
 
-
         for (batch_idx, inputs) in enumerate(self.eval_loader):
-            
+
             inputs = self._set_inputs_to_device(inputs)
 
             model_output = self.model(inputs)
@@ -409,12 +412,11 @@ class Trainer:
 
         return epoch_loss
 
-
     def train_step(self):
         """The trainer performs training loop over the train_loader.
-        
+
         Retruns:
-            (torch.Tensor): The step training loss 
+            (torch.Tensor): The step training loss
         """
         # set model in train model
         self.model.train()
@@ -422,7 +424,7 @@ class Trainer:
         epoch_loss = 0
 
         for (batch_idx, inputs) in enumerate(self.train_loader):
-            
+
             inputs = self._set_inputs_to_device(inputs)
 
             self.optimizer.zero_grad()
@@ -436,7 +438,6 @@ class Trainer:
 
             epoch_loss += loss.item()
 
-
         # Allows model updates if needed
         self.model.update()
 
@@ -446,7 +447,7 @@ class Trainer:
 
     def save_model(self, dir_path):
         """This method saves the final model along with the config files
-        
+
         Args:
             dir_path (str): The folder where the model and config files should be saved
         """
@@ -460,26 +461,26 @@ class Trainer:
         # save training config
         self.training_config.save_json(dir_path, "training_config")
 
-
     def save_checkpoint(self, dir_path, epoch: int):
         """Saves a checkpoint alowing to restart training from here
-        
+
         Args:
             dir_path (str): The folder where the checkpoint should be saved
             epochs_signature (int): The epoch number"""
 
-        checkpoint_dir = os.path.join(dir_path,
-            f"checkpoint_epoch_{epoch}")
+        checkpoint_dir = os.path.join(dir_path, f"checkpoint_epoch_{epoch}")
 
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
 
         # save optimizer
-        torch.save(deepcopy(self.optimizer.state_dict()), os.path.join(checkpoint_dir, 'optimizer.pt'))
+        torch.save(
+            deepcopy(self.optimizer.state_dict()),
+            os.path.join(checkpoint_dir, "optimizer.pt"),
+        )
 
         # save model
         self.model.save(checkpoint_dir)
 
         # save training config
         self.training_config.save_json(checkpoint_dir, "training_config")
-

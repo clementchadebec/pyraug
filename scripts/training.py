@@ -1,16 +1,17 @@
 import argparse
-import os
-import torch
-import logging
 import importlib
-import numpy as np
+import logging
+import os
 
-from pyraug.models import RHVAE
-from pyraug.models.rhvae import RHVAEConfig
-from pyraug.trainers.training_config import TrainingConfig
+import numpy as np
+import torch
+
 from pyraug.data.loaders import ImageGetterFromFolder
 from pyraug.data.preprocessors import DataProcessor
+from pyraug.models import RHVAE
+from pyraug.models.rhvae import RHVAEConfig
 from pyraug.trainers import Trainer
+from pyraug.trainers.training_config import TrainingConfig
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -52,13 +53,14 @@ ap.add_argument(
 
 args = ap.parse_args()
 
+
 def main(args):
 
     model_config = RHVAEConfig.from_json_file(args.path_to_model_config)
     training_config = TrainingConfig.from_json_file(args.path_to_training_config)
 
     train_data = ImageGetterFromFolder.load(args.path_to_train_data)
-    data_processor = DataProcessor(data_normalization_type='individual_min_max_scaling')
+    data_processor = DataProcessor(data_normalization_type="individual_min_max_scaling")
     train_data = data_processor.process_data(train_data)
     train_dataset = DataProcessor.to_dataset(train_data)
 
@@ -72,19 +74,17 @@ def main(args):
         eval_data = data_processor.process_data(eval_data)
         eval_dataset = DataProcessor.to_dataset(eval_data)
 
-
     else:
         eval_dataset = None
 
-      
-
     model = RHVAE(model_config)
-    
+
     trainer = Trainer(
         model=model,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        training_config=training_config)
+        training_config=training_config,
+    )
 
     trainer.train(log_output_dir=args.path_to_logs)
 

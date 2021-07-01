@@ -17,7 +17,7 @@ setup(
     version="0.0.1",
     author="Clement Chadebec (HekA team INRIA)",
     author_email="clement.chadebec@inria.fr",
-    description="Data Augmentation in HDLSS setting with VAE",
+    description="Data Augmentation with VAE",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/pypa/sampleproject",
@@ -35,8 +35,8 @@ setup(
         "dill>=0.3.3",
         "nibabel>=3.2.1",
         "pydantic>=1.8.2",
-        "dataclasses>=0.8",
-        "Pillow>=8.3.0"
-      ],
+        "dataclasses>=0.6",
+        "Pillow>=8.3.0",
+    ],
     python_requires=">=3.6",
 )

@@ -15,7 +15,7 @@ import sphinx_rtd_theme
 
 # -- Path setup --------------------------------------------------------------
 
-needs_sphinx = '1.6'
+needs_sphinx = "1.6"
 
 sys.path.insert(0, os.path.abspath("../../src/"))
 
@@ -44,13 +44,13 @@ extensions = extensions = [
     "sphinxcontrib.bibtex",
 ]
 
-bibtex_bibfiles = ['references.bib']
+bibtex_bibfiles = ["references.bib"]
 
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable", None),
-    "torch": ("https://pytorch.org/docs/stable/", None)
+    "torch": ("https://pytorch.org/docs/stable/", None),
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -69,7 +69,7 @@ exclude_patterns = []
 #
 html_theme = "sphinx_rtd_theme"
 
-autodoc_typehints = 'none'
+autodoc_typehints = "none"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

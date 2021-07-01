@@ -1,6 +1,4 @@
 import os
-import typing
-from typing import Optional, Dict
 from copy import deepcopy
 from typing import Optional
 
@@ -8,21 +6,18 @@ import dill
 import torch
 import torch.nn as nn
 
-from pyraug.models.nn import BaseEncoder, BaseDecoder
 from pyraug.customexception import BadInheritanceError
-from .base_utils import ModelOuput
+from pyraug.models.nn import BaseDecoder, BaseEncoder
+from pyraug.models.nn.default_architectures import Decoder_MLP, Encoder_MLP
+
 from .base_config import BaseModelConfig
-
-from pyraug.models.nn.default_architectures import (
-    Encoder_MLP,Decoder_MLP)
-
 
 
 class BaseVAE(nn.Module):
     """Base class for VAE based models.
-    
+
     Args:
-        model_config (BaseModelConfig): An instance of BaseModelConfig in which any model's parameters is 
+        model_config (BaseModelConfig): An instance of BaseModelConfig in which any model's parameters is
             made available.
 
         encoder (BaseEncoder): An instance of BaseEncoder (inheriting from `torch.nn.Module` which
@@ -36,7 +31,7 @@ class BaseVAE(nn.Module):
             (https://en.wikipedia.org/wiki/Multilayer_perceptron) is used. Default: None.
 
     .. note::
-        For high dimensional data we advice you to provide you own network architectures. With the 
+        For high dimensional data we advice you to provide you own network architectures. With the
         provided MLP you may end up with a ``MemoryError``.
     """
 
@@ -44,34 +39,39 @@ class BaseVAE(nn.Module):
         self,
         model_config: BaseModelConfig,
         encoder: Optional[BaseEncoder] = None,
-        decoder: Optional[BaseDecoder] = None):
+        decoder: Optional[BaseDecoder] = None,
+    ):
 
         nn.Module.__init__(self)
 
         self.input_dim = model_config.input_dim
         self.latent_dim = model_config.latent_dim
-        
+
         self.model_config = model_config
 
         if encoder is None:
             if model_config.input_dim is None:
-                raise AttributeError("No input dimension provided !"
-                "'input_dim' parameter of BaseModelConfig instance must be set to 'data_shape' where "
-                "the shape of the data is [mini_batch x data_shape]. Unable to build encoder " 
-                "automatically")
+                raise AttributeError(
+                    "No input dimension provided !"
+                    "'input_dim' parameter of BaseModelConfig instance must be set to 'data_shape' where "
+                    "the shape of the data is [mini_batch x data_shape]. Unable to build encoder "
+                    "automatically"
+                )
 
             encoder = Encoder_MLP(model_config)
             self.model_config.uses_default_encoder = True
 
         else:
             self.model_config.uses_default_encoder = False
-        
+
         if decoder is None:
             if model_config.input_dim is None:
-                raise AttributeError("No input dimension provided !"
-                "'input_dim' parameter of BaseModelConfig instance must be set to 'data_shape' where "
-                "the shape of the data is [mini_batch x data_shape]. Unable to build decoder" 
-                "automatically")
+                raise AttributeError(
+                    "No input dimension provided !"
+                    "'input_dim' parameter of BaseModelConfig instance must be set to 'data_shape' where "
+                    "the shape of the data is [mini_batch x data_shape]. Unable to build decoder"
+                    "automatically"
+                )
 
             decoder = Decoder_MLP(model_config)
             self.model_config.uses_default_decoder = True
@@ -87,15 +87,15 @@ class BaseVAE(nn.Module):
     def forward(self, inputs):
         """Main forward pass outputing the VAE outputs
         This function should output an model_output instance gathering all the model outputs
-        
+
         Args:
             inputs (Dict[str, torch.Tensor]): The training data with labels, masks etc...
-            
+
         Returns:
             (ModelOutput): The output of the model.
-            
+
         .. note::
-            The loss must be computed in this forward pass and accessed through 
+            The loss must be computed in this forward pass and accessed through
             ``loss = model_output.loss`` """
         raise NotImplementedError()
 
@@ -109,11 +109,11 @@ class BaseVAE(nn.Module):
         pass
 
     def save(self, dir_path):
-        """Method to save the model at a specific location. It saves, the model weights as a 
-        ``models.pt`` file along with the model config as a ``model_config.json`` file. If the 
-        model to save used custom encoder (resp. decoder) provided by the user, these are also saved as 
-        ``decoder.pkl`` (resp. ``decoder.pkl``).  
-        
+        """Method to save the model at a specific location. It saves, the model weights as a
+        ``models.pt`` file along with the model config as a ``model_config.json`` file. If the
+        model to save used custom encoder (resp. decoder) provided by the user, these are also saved as
+        ``decoder.pkl`` (resp. ``decoder.pkl``).
+
         Args:
             dir_path (str): The path where the model should be saved. If the path
                 path does not exist a folder will be created at the provided location.
@@ -121,9 +121,7 @@ class BaseVAE(nn.Module):
 
         model_path = dir_path
 
-        model_dict = {
-            "model_state_dict": deepcopy(self.state_dict()),
-        }
+        model_dict = {"model_state_dict": deepcopy(self.state_dict())}
 
         if not os.path.exists(model_path):
             try:
@@ -144,14 +142,14 @@ class BaseVAE(nn.Module):
                 dill.dump(self.decoder, fp)
 
         torch.save(model_dict, os.path.join(model_path, "model.pt"))
-        
 
     @classmethod
     def _load_model_config_from_folder(cls, dir_path):
         file_list = os.listdir(dir_path)
 
         if "model_config.json" not in file_list:
-            raise FileNotFoundError(f"Missing model config file ('model_config.json') in"
+            raise FileNotFoundError(
+                f"Missing model config file ('model_config.json') in"
                 f"{dir_path}... Cannot perform model building."
             )
 
@@ -166,23 +164,28 @@ class BaseVAE(nn.Module):
         file_list = os.listdir(dir_path)
 
         if "model.pt" not in file_list:
-            raise FileNotFoundError(f"Missing model weights file ('model.pt') file in"
+            raise FileNotFoundError(
+                f"Missing model weights file ('model.pt') file in"
                 f"{dir_path}... Cannot perform model building."
             )
 
         path_to_model_weights = os.path.join(dir_path, "model.pt")
 
         try:
-            model_weights = torch.load(path_to_model_weights, map_location='cpu')
+            model_weights = torch.load(path_to_model_weights, map_location="cpu")
 
-        except:
-            RuntimeError("Enable to load model weights. Ensure they are saves in a '.pt' format.")
-        
-        if 'model_state_dict' not in model_weights.keys():
-            raise KeyError("Model state dict is not available in 'model.pt' file. Got keys:"
-                f"{model_weights.keys()}")
+        except RuntimeError:
+            RuntimeError(
+                "Enable to load model weights. Ensure they are saves in a '.pt' format."
+            )
 
-        model_weights = model_weights['model_state_dict']
+        if "model_state_dict" not in model_weights.keys():
+            raise KeyError(
+                "Model state dict is not available in 'model.pt' file. Got keys:"
+                f"{model_weights.keys()}"
+            )
+
+        model_weights = model_weights["model_state_dict"]
 
         return model_weights
 
@@ -192,7 +195,8 @@ class BaseVAE(nn.Module):
         file_list = os.listdir(dir_path)
 
         if "encoder.pkl" not in file_list:
-                raise FileNotFoundError(f"Missing encoder pkl file ('encoder.pkl') in"
+            raise FileNotFoundError(
+                f"Missing encoder pkl file ('encoder.pkl') in"
                 f"{dir_path}... This file is needed to rebuild custom encoders."
                 " Cannot perform model building."
             )
@@ -209,7 +213,8 @@ class BaseVAE(nn.Module):
         file_list = os.listdir(dir_path)
 
         if "decoder.pkl" not in file_list:
-                raise FileNotFoundError(f"Missing decoder pkl file ('decoder.pkl') in"
+            raise FileNotFoundError(
+                f"Missing decoder pkl file ('decoder.pkl') in"
                 f"{dir_path}... This file is needed to rebuild custom decoders."
                 " Cannot perform model building."
             )
@@ -220,11 +225,10 @@ class BaseVAE(nn.Module):
 
         return decoder
 
-
     @classmethod
     def load_from_folder(cls, dir_path):
         """Class method to be used to load the model from a specific folder
-        
+
         Args:
             dir_path (str): The path where the model should have been be saved.
 
@@ -233,14 +237,13 @@ class BaseVAE(nn.Module):
                 a ``model_config.json`` and a ``model.pt`` if no custom architectures were
                 provided
 
-                or 
-                a ``model_config.json``, a ``model.pt`` and a ``encoder.pkl`` (resp. 
+                or
+                a ``model_config.json``, a ``model.pt`` and a ``encoder.pkl`` (resp.
                 ``decoder.pkl``) if a custom encoder (resp. decoder) was provided
         """
-        
+
         model_config = cls._load_model_config_from_folder(dir_path)
         model_weights = cls._load_model_weights_from_folder(dir_path)
-       
 
         if not model_config.uses_default_encoder:
             encoder = cls._load_custom_encoder_from_folder(dir_path)

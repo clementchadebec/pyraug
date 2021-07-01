@@ -1,8 +1,4 @@
-
-
-
 class Pipeline:
-
     def __init__(self):
         pass
 
@@ -10,5 +6,3 @@ class Pipeline:
         """
         The method run the Pipeline process and must be implemented in a child class
         """
-
-    

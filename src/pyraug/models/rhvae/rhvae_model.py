@@ -1,38 +1,36 @@
+import os
+from copy import deepcopy
+from typing import Optional
+
+import dill
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import grad
-import typing
-from typing import Optional
-import numpy as np
-from copy import deepcopy
-import os
-import dill
-import numpy as np
-from .rhvae_utils import create_metric, create_inverse_metric
 
-from pyraug.models.base.base_vae import BaseVAE
-
-from pyraug.models.nn import BaseEncoder, BaseDecoder, BaseMetric
-from pyraug.models.nn.default_architectures import Metric_MLP
-
-from pyraug.models.rhvae.rhvae_config import RHVAEConfig
-from pyraug.models.base.base_utils import ModelOuput
 from pyraug.customexception import BadInheritanceError
+from pyraug.models.base.base_utils import ModelOuput
+from pyraug.models.base.base_vae import BaseVAE
+from pyraug.models.nn import BaseDecoder, BaseEncoder, BaseMetric
+from pyraug.models.nn.default_architectures import Metric_MLP
+from pyraug.models.rhvae.rhvae_config import RHVAEConfig
 
+from .rhvae_utils import create_inverse_metric, create_metric
 
 
 class RHVAE(BaseVAE):
     r"""
-    This is an implementation of the Riemannian Hamiltonian VAE model proposed in 
-    (https://arxiv.org/pdf/2010.11518.pdf). This model provides a way to 
-    learn the Riemannian latent structure of a given set of data set through a parametrized 
+    This is an implementation of the Riemannian Hamiltonian VAE model proposed in
+    (https://arxiv.org/pdf/2010.11518.pdf). This model provides a way to
+    learn the Riemannian latent structure of a given set of data set through a parametrized
     Riemannian metric having the following shape:
 
-    :math:`\mathbf{G}^{-1}(z) = \sum \limits _{i=1}^N L_{\psi_i} L_{\psi_i}^{\top} \exp \Big(-\frac{\lVert z - c_i \rVert_2^2}{T^2} \Big) + \lambda I_d`
+    :math:`\mathbf{G}^{-1}(z) = \sum \limits _{i=1}^N L_{\psi_i} L_{\psi_i}^{\top} \exp
+        \Big(-\frac{\lVert z - c_i \rVert_2^2}{T^2} \Big) + \lambda I_d`
 
-    and to generate new data. It is particularly well suited for High 
-    Dimensional data combined with low sample number and proved relevant for Data Augmentation as 
+    and to generate new data. It is particularly well suited for High
+    Dimensional data combined with low sample number and proved relevant for Data Augmentation as
     proved in (https://arxiv.org/pdf/2105.00026.pdf).
 
 
@@ -40,18 +38,21 @@ class RHVAE(BaseVAE):
         model_config (RHVAEConfig): A model configuration setting the main parameters of the model
 
     .. note::
-        For high dimensional data we advice you to provide you own network architectures. With the 
+        For high dimensional data we advice you to provide you own network architectures. With the
         provided MLP you may end up with a ``MemoryError``.
     """
 
     def __init__(
         self,
         model_config: RHVAEConfig,
-        encoder: Optional[BaseEncoder]=None ,
-        decoder: Optional[BaseDecoder]=None,
-        metric:  Optional[BaseMetric]=None):
+        encoder: Optional[BaseEncoder] = None,
+        decoder: Optional[BaseDecoder] = None,
+        metric: Optional[BaseMetric] = None,
+    ):
 
-        BaseVAE.__init__(self, model_config=model_config, encoder=encoder, decoder=decoder)
+        BaseVAE.__init__(
+            self, model_config=model_config, encoder=encoder, decoder=decoder
+        )
 
         if metric is None:
             metric = Metric_MLP(model_config)
@@ -59,7 +60,7 @@ class RHVAE(BaseVAE):
 
         else:
             self.model_config.uses_default_metric = False
-        
+
         self.set_metric(metric)
 
         self.temperature = nn.Parameter(
@@ -79,18 +80,22 @@ class RHVAE(BaseVAE):
         self.M = []
         self.centroids = []
 
-        self.M_tens = torch.randn(1, self.model_config.latent_dim, self.model_config.latent_dim)
+        self.M_tens = torch.randn(
+            1, self.model_config.latent_dim, self.model_config.latent_dim
+        )
         self.centroids_tens = torch.randn(1, self.model_config.latent_dim)
 
         # define a starting metric (gamma_i = 0 & L = I_d)
         def G(z):
             return torch.inverse(
                 (
-                torch.eye(self.latent_dim, device=z.device).unsqueeze(0)
-                * torch.exp(-torch.norm(z.unsqueeze(1), dim=-1) ** 2)
-                .unsqueeze(-1)
-                .unsqueeze(-1)
-            ).sum(dim=1) + self.lbd * torch.eye(self.latent_dim).to(z.device))
+                    torch.eye(self.latent_dim, device=z.device).unsqueeze(0)
+                    * torch.exp(-torch.norm(z.unsqueeze(1), dim=-1) ** 2)
+                    .unsqueeze(-1)
+                    .unsqueeze(-1)
+                ).sum(dim=1)
+                + self.lbd * torch.eye(self.latent_dim).to(z.device)
+            )
 
         def G_inv(z):
             return (
@@ -103,17 +108,16 @@ class RHVAE(BaseVAE):
         self.G = G
         self.G_inv = G_inv
 
-
     def update(self):
         self.update_metric()
 
     def set_metric(self, metric: BaseMetric) -> None:
         r"""This method is called to set the metric network outputing the
-        :math:`L_{\psi_i}` of the metric matrices 
+        :math:`L_{\psi_i}` of the metric matrices
 
         Args:
             metric (BaseMetric): The metric module that need to be set to the model.
-                
+
         """
         if not issubclass(type(metric), BaseMetric):
             raise BadInheritanceError(
@@ -122,15 +126,15 @@ class RHVAE(BaseVAE):
                     "pyraug.models.base_architectures.BaseMetric. Refer to documentation."
                 )
             )
-        
+
         self.metric = metric
 
     def forward(self, inputs):
         r"""
-        The input data is first encoded. The reparametrization is used to produce a sample 
+        The input data is first encoded. The reparametrization is used to produce a sample
         :math:`z_0` from the approximate posterior :math:`q_{\phi}(z|x)`. Then Riemannian
         Hamiltonian equations are solved using the generalized leapfrog integrator. In the meantime,
-        the input data :math:`x` is fed to the metric network outputing the matrices 
+        the input data :math:`x` is fed to the metric network outputing the matrices
         :math:`L_{\psi}`. The metric is computed and used with the integrator.
 
         Args:
@@ -140,7 +144,7 @@ class RHVAE(BaseVAE):
             output (ModelOutput): An instance of ModelOutput containing all the relevant parameters
         """
 
-        x = inputs['data']
+        x = inputs["data"]
 
         mu, log_var = self.encoder(x)
         std = torch.exp(0.5 * log_var)
@@ -171,7 +175,7 @@ class RHVAE(BaseVAE):
         else:
             G = self.G(z)
             G_inv = self.G_inv(z)
-            L = torch.cholesky(G)
+            L = torch.linalg.cholesky(G)
 
         G_log_det = -torch.logdet(G_inv)
 
@@ -223,7 +227,9 @@ class RHVAE(BaseVAE):
             rho = (beta_sqrt_old / beta_sqrt) * rho__
             beta_sqrt_old = beta_sqrt
 
-        loss = self.loss_function(recon_x, x, z0, z, rho, eps0, gamma, mu, log_var, G_inv, G_log_det)
+        loss = self.loss_function(
+            recon_x, x, z0, z, rho, eps0, gamma, mu, log_var, G_inv, G_log_det
+        )
 
         output = ModelOuput(
             loss=loss,
@@ -241,10 +247,9 @@ class RHVAE(BaseVAE):
 
         return output
 
-
     def save(self, dir_path: str):
         """Method to save the model at a specific location
-        
+
         Args:
             dir_path (str): The path where the model should be saved. If the path
                 path does not exist a folder will be created at the provided location.
@@ -267,13 +272,13 @@ class RHVAE(BaseVAE):
 
         torch.save(model_dict, os.path.join(model_path, "model.pt"))
 
-        
     @classmethod
     def _load_model_config_from_folder(cls, dir_path):
         file_list = os.listdir(dir_path)
 
         if "model_config.json" not in file_list:
-            raise FileNotFoundError(f"Missing model config file ('model_config.json') in"
+            raise FileNotFoundError(
+                f"Missing model config file ('model_config.json') in"
                 f"{dir_path}... Cannot perform model building."
             )
 
@@ -288,7 +293,8 @@ class RHVAE(BaseVAE):
         file_list = os.listdir(dir_path)
 
         if "metric.pkl" not in file_list:
-                raise FileNotFoundError(f"Missing metric pkl file ('metric.pkl') in"
+            raise FileNotFoundError(
+                f"Missing metric pkl file ('metric.pkl') in"
                 f"{dir_path}... This file is needed to rebuild custom metrics."
                 " Cannot perform model building."
             )
@@ -301,34 +307,36 @@ class RHVAE(BaseVAE):
 
     @classmethod
     def _load_metric_matrices_and_centroids(cls, dir_path):
-        """this function can be called safely since it is called after 
+        """this function can be called safely since it is called after
         _load_model_weights_from_folder which handles FileNotFoundError and
         loading issues"""
 
-        file_list = os.listdir(dir_path)
         path_to_model_weights = os.path.join(dir_path, "model.pt")
 
-       
-        model_weights = torch.load(path_to_model_weights, map_location='cpu')
+        model_weights = torch.load(path_to_model_weights, map_location="cpu")
 
-        if 'M' not in model_weights.keys():
-            raise KeyError("Metric M matrices are not available in 'model.pt' file. Got keys:"
-                f"{model_weights.keys()}. These are needed to build the metric.")
+        if "M" not in model_weights.keys():
+            raise KeyError(
+                "Metric M matrices are not available in 'model.pt' file. Got keys:"
+                f"{model_weights.keys()}. These are needed to build the metric."
+            )
 
-        metric_M = model_weights['M']
+        metric_M = model_weights["M"]
 
-        if 'centroids' not in model_weights.keys():
-            raise KeyError("Metric centroids are not available in 'model.pt' file. Got keys:"
-                f"{model_weights.keys()}. These are needed to build the metric.")
+        if "centroids" not in model_weights.keys():
+            raise KeyError(
+                "Metric centroids are not available in 'model.pt' file. Got keys:"
+                f"{model_weights.keys()}. These are needed to build the metric."
+            )
 
-        metric_centroids = model_weights['centroids']
+        metric_centroids = model_weights["centroids"]
 
         return metric_M, metric_centroids
 
     @classmethod
     def load_from_folder(cls, dir_path):
         """Class method to be used to load the model from a specific folder
-        
+
         Args:
             dir_path (str): The path where the model should have been be saved.
 
@@ -336,7 +344,7 @@ class RHVAE(BaseVAE):
             This function requires the folder to contain:
                 a ``model_config.json`` and a ``model.pt`` if no custom architectures were
                 provided
-                a ``model_config.json``, a ``model.pt`` and a ``encoder.pkl`` (resp. 
+                a ``model_config.json``, a ``model.pt`` and a ``encoder.pkl`` (resp.
                 ``decoder.pkl`` or/and ``metric.pkl``) if a custom encoder (resp. decoder or/and
                 metric) was provided
         """
@@ -362,12 +370,10 @@ class RHVAE(BaseVAE):
         else:
             metric = None
 
-
         model = cls(model_config, encoder=encoder, decoder=decoder, metric=metric)
-        
 
         metric_M, metric_centroids = cls._load_metric_matrices_and_centroids(dir_path)
-        
+
         model.M_tens = metric_M
         model.centroids_tens = metric_centroids
 
@@ -375,7 +381,6 @@ class RHVAE(BaseVAE):
         model.G_inv = create_inverse_metric(model)
 
         model.load_state_dict(model_weights)
-
 
         return model
 
@@ -506,7 +511,6 @@ class RHVAE(BaseVAE):
             covariance_matrix=torch.eye(self.latent_dim).to(x.device),
         )
 
-
         logq = normal.log_prob(eps0) - 0.5 * log_var.sum(dim=1)  # log(q(z_0|x))
 
         return -(logp - logq).mean()
@@ -574,7 +578,7 @@ class RHVAE(BaseVAE):
 
         G_log_det_rep = torch.logdet(G_rep)
 
-        L_rep = torch.cholesky(G_rep)
+        L_rep = torch.linalg.cholesky(G_rep)
 
         G_inv_rep_0 = G_inv_rep
         G_log_det_rep_0 = G_log_det_rep
@@ -669,4 +673,3 @@ class RHVAE(BaseVAE):
         )  # + self.latent_dim /2 * torch.log(self.beta_zero_sqrt ** 2)
 
         return logpx
-

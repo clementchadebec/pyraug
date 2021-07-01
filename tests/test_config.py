@@ -5,22 +5,17 @@ import pytest
 from pydantic import ValidationError
 
 from pyraug.config import BaseConfig
-
 from pyraug.models.base.base_config import BaseModelConfig
-
 from pyraug.models.rhvae.rhvae_config import RHVAEConfig, RHVAESamplerConfig
 from pyraug.trainers.training_config import TrainingConfig
-
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
 # RHVAE loading tests
 class Test_Save_Model_JSON_from_Config:
-
-    @pytest.fixture(params=[
-        BaseModelConfig(),
-        BaseModelConfig(input_dim=100, latent_dim=5)
-    ])
+    @pytest.fixture(
+        params=[BaseModelConfig(), BaseModelConfig(input_dim=100, latent_dim=5)]
+    )
     def model_configs(self, request):
         return request.param
 
@@ -30,18 +25,17 @@ class Test_Save_Model_JSON_from_Config:
 
         model_configs.save_json(dir_path, "dummy_json")
 
-        assert 'dummy_json.json' in os.listdir(dir_path)
+        assert "dummy_json.json" in os.listdir(dir_path)
 
-        rec_model_config = BaseModelConfig.from_json_file(os.path.join(dir_path, "dummy_json.json"))
+        rec_model_config = BaseModelConfig.from_json_file(
+            os.path.join(dir_path, "dummy_json.json")
+        )
 
         assert rec_model_config.__dict__ == model_configs.__dict__
 
-    
-    
-    @pytest.fixture(params=[
-        TrainingConfig(),
-        TrainingConfig(learning_rate=100, batch_size=15)
-    ])
+    @pytest.fixture(
+        params=[TrainingConfig(), TrainingConfig(learning_rate=100, batch_size=15)]
+    )
     def training_configs(self, request):
         return request.param
 
@@ -51,12 +45,13 @@ class Test_Save_Model_JSON_from_Config:
 
         training_configs.save_json(dir_path, "dummy_json")
 
-        assert 'dummy_json.json' in os.listdir(dir_path)
+        assert "dummy_json.json" in os.listdir(dir_path)
 
-        rec_training_config = TrainingConfig.from_json_file(os.path.join(dir_path, "dummy_json.json"))
+        rec_training_config = TrainingConfig.from_json_file(
+            os.path.join(dir_path, "dummy_json.json")
+        )
 
         assert rec_training_config.__dict__ == training_configs.__dict__
-
 
 
 class Test_Load_RHVAE_Config_From_JSON:
@@ -103,17 +98,13 @@ class Test_Load_RHVAE_Config_From_JSON:
             [
                 os.path.join(PATH, "data/rhvae/configs/generation_config00.json"),
                 RHVAESamplerConfig(
-                    batch_size=3,
-                    mcmc_steps_nbr=3,
-                    n_lf=2,
-                    eps_lf=0.003,
+                    batch_size=3, mcmc_steps_nbr=3, n_lf=2, eps_lf=0.003
                 ),
             ],
         ]
     )
     def custom_config_path_with_true_config(self, request):
         return request.param
-
 
     def test_load_custom_config(self, custom_config_path_with_true_config):
 
@@ -123,14 +114,15 @@ class Test_Load_RHVAE_Config_From_JSON:
         if config_path == os.path.join(PATH, "data/rhvae/configs/model_config00.json"):
             parsed_config = RHVAEConfig.from_json_file(config_path)
 
-        elif config_path == os.path.join(PATH, "data/rhvae/configs/training_config00.json"):
+        elif config_path == os.path.join(
+            PATH, "data/rhvae/configs/training_config00.json"
+        ):
             parsed_config = TrainingConfig.from_json_file(config_path)
 
         else:
             parsed_config = RHVAESamplerConfig.from_json_file(config_path)
 
         assert parsed_config == true_config
-
 
     def test_load_dict_from_json_config(self, custom_config_path):
         config_dict = BaseConfig._dict_from_json(custom_config_path)
@@ -144,11 +136,11 @@ class Test_Load_RHVAE_Config_From_JSON:
         with pytest.raises(TypeError):
             _ = BaseConfig._dict_from_json(not_json_config_path)
 
+
 class Test_Load_Config_From_Dict:
     @pytest.fixture(params=[{"latant_dim": 10}, {"batsh_size": 1}, {"mcmc_steps": 12}])
     def corrupted_keys_dict_config(self, request):
         return request.param
-
 
     def test_raise_type_error_corrupted_keys(self, corrupted_keys_dict_config):
         if set(corrupted_keys_dict_config.keys()).issubset(["latant_dim"]):
@@ -162,7 +154,6 @@ class Test_Load_Config_From_Dict:
         else:
             with pytest.raises(TypeError):
                 RHVAESamplerConfig.from_dict(corrupted_keys_dict_config)
-
 
     @pytest.fixture(
         params=[

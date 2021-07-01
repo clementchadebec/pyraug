@@ -1,11 +1,12 @@
-import torch
-import os
+import datetime
 import logging
+import os
+
+import torch
 
 from ..base.base_sampler import BaseSampler
 from .rhvae_config import RHVAESamplerConfig
 from .rhvae_model import RHVAE
-import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -19,45 +20,38 @@ class RHVAESampler(BaseSampler):
     """Hamiltonian Monte Carlo Sampler class.
     This is an implementation of the Hamiltonian/Hybrid Monte Carlo sampler
     (https://en.wikipedia.org/wiki/Hamiltonian_Monte_Carlo)
-    
+
     Args:
         model (RHVAE): The VAE model to sample from
         sampler_config (RHVAESamplerConfig): A HMCSamplerConfig instance containing the main
             parameters of the sampler. If None, a pre-defined configuration is used. Default: None
     """
 
-    def __init__(
-        self,
-        model: RHVAE,
-        sampler_config: RHVAESamplerConfig = None):
+    def __init__(self, model: RHVAE, sampler_config: RHVAESamplerConfig = None):
 
-        BaseSampler.__init__(
-            self,
-            model=model,
-            sampler_config=sampler_config)
+        BaseSampler.__init__(self, model=model, sampler_config=sampler_config)
 
         self.sampler_config = sampler_config
 
         self.model.M_tens = self.model.M_tens.to(self.device)
         self.model.centroids_tens = self.model.centroids_tens.to(self.device)
 
-
         self.mcmc_steps_nbr = sampler_config.mcmc_steps_nbr
         self.n_lf = torch.tensor([sampler_config.n_lf]).to(self.device)
         self.eps_lf = torch.tensor([sampler_config.eps_lf]).to(self.device)
-        self.beta_zero_sqrt = torch.tensor([sampler_config.beta_zero]).to(self.device).sqrt()
+        self.beta_zero_sqrt = (
+            torch.tensor([sampler_config.beta_zero]).to(self.device).sqrt()
+        )
 
         self.log_pi = RHVAESampler.log_sqrt_det_G_inv
         self.grad_func = RHVAESampler.grad_log_prop
-
-        
 
     def sample(self, samples_number):
         """
         HMC sampling with a RHVAE.
 
-        The data is saved in the ``output_dir`` (folder passed in the 
-        `~pyraug.models.model_config.SamplerConfig` instance) in a folder named 
+        The data is saved in the ``output_dir`` (folder passed in the
+        `~pyraug.models.model_config.SamplerConfig` instance) in a folder named
         ``generation_YYYY-MM-DD_hh-mm-ss``. If ``output_dir`` is None, a folder named
         ``dummy_output_dir`` is created in this folder.
 
@@ -65,31 +59,28 @@ class RHVAESampler(BaseSampler):
             num_samples (int): The number of samples to generate
         """
 
-        assert samples_number > 0, f"Provide a number of samples > 0"
+        assert samples_number > 0, "Provide a number of samples > 0"
 
-        self._sampling_signature = str(
-            datetime.datetime.now())[0:19].replace(" ", "_").replace(":", "-")
+        self._sampling_signature = (
+            str(datetime.datetime.now())[0:19].replace(" ", "_").replace(":", "-")
+        )
 
         sampling_dir = os.path.join(
-            self.sampler_config.output_dir, f'generation_{self._sampling_signature}')
+            self.sampler_config.output_dir, f"generation_{self._sampling_signature}"
+        )
 
         if not os.path.exists(sampling_dir):
             os.makedirs(sampling_dir)
-            logger.info(f"Created {sampling_dir}."
-                "Generated data and sampler config will be saved here.\n")
-
+            logger.info(
+                f"Created {sampling_dir}."
+                "Generated data and sampler config will be saved here.\n"
+            )
 
         full_batch_nbr = int(samples_number / self.sampler_config.batch_size)
         last_batch_samples_nbr = samples_number % self.sampler_config.batch_size
 
-        if last_batch_samples_nbr == 0:
-            batch_number = full_batch_nbr
-
-        else:
-            batch_number = full_batch_nbr + 1
-
         generated_data = []
-    
+
         file_count = 0
         data_count = 0
 
@@ -102,88 +93,93 @@ class RHVAESampler(BaseSampler):
             assert len(x_gen.shape) == 2
             generated_data.append(x_gen)
             data_count += self.batch_size
-        
+
             while data_count >= self.samples_per_save:
                 self.save_data_batch(
-                    data=torch.cat(generated_data)[:self.samples_per_save],
+                    data=torch.cat(generated_data)[: self.samples_per_save],
                     dir_path=sampling_dir,
                     number_of_samples=self.samples_per_save,
-                    batch_idx=file_count)
+                    batch_idx=file_count,
+                )
 
-                file_count+=1
+                file_count += 1
                 data_count -= self.samples_per_save
-                generated_data = list(torch.cat(generated_data)[self.samples_per_save:].unsqueeze(0))
+                generated_data = list(
+                    torch.cat(generated_data)[self.samples_per_save:].unsqueeze(0)
+                )
 
         if last_batch_samples_nbr > 0:
             samples = self.hmc_sampling(last_batch_samples_nbr)
             x_gen = self.model.decoder(z=samples).detach()
             generated_data.append(x_gen)
 
-            data_count+= last_batch_samples_nbr
+            data_count += last_batch_samples_nbr
 
             while data_count >= self.samples_per_save:
                 self.save_data_batch(
-                    data=torch.cat(generated_data)[:self.samples_per_save],
+                    data=torch.cat(generated_data)[: self.samples_per_save],
                     dir_path=sampling_dir,
                     number_of_samples=self.samples_per_save,
-                    batch_idx=file_count)
+                    batch_idx=file_count,
+                )
 
-                file_count+=1
+                file_count += 1
                 data_count -= self.samples_per_save
-                generated_data = list(torch.cat(generated_data)[self.samples_per_save:].unsqueeze(0))
-
+                generated_data = list(
+                    torch.cat(generated_data)[self.samples_per_save:].unsqueeze(0)
+                )
 
         if data_count > 0:
             self.save_data_batch(
-                    data=torch.cat(generated_data),
-                    dir_path=sampling_dir,
-                    number_of_samples=data_count,
-                    batch_idx=file_count)
+                data=torch.cat(generated_data),
+                dir_path=sampling_dir,
+                number_of_samples=data_count,
+                batch_idx=file_count,
+            )
 
         self.save(sampling_dir)
 
-        
-    def hmc_sampling(
-        self,
-        n_samples
-    ):
-       
+    def hmc_sampling(self, n_samples):
+
         with torch.no_grad():
-            
+
             idx = torch.randint(len(self.model.centroids_tens), (n_samples,))
 
             z0 = self.model.centroids_tens[idx]
-    
-            
+
             beta_sqrt_old = self.beta_zero_sqrt
             z = z0
             for i in range(self.mcmc_steps_nbr):
-               
+
                 gamma = torch.randn_like(z, device=self.device)
                 rho = gamma / self.beta_zero_sqrt
-
-                
 
                 H0 = -self.log_pi(z, self.model) + 0.5 * torch.norm(rho, dim=1) ** 2
                 # print(model.G_inv(z).det())
 
                 for k in range(self.n_lf):
 
-                    g = -self.grad_func(z, self.model).reshape(n_samples, self.model.latent_dim)
+                    g = -self.grad_func(z, self.model).reshape(
+                        n_samples, self.model.latent_dim
+                    )
                     # step 1
                     rho_ = rho - (self.eps_lf / 2) * g
 
                     # step 2
                     z_ = z + self.eps_lf * rho_
 
-                    g = -self.grad_func(z_, self.model).reshape(n_samples, self.model.latent_dim)
+                    g = -self.grad_func(z_, self.model).reshape(
+                        n_samples, self.model.latent_dim
+                    )
                     # g = (Sigma_inv @ (z - mu).T).reshape(n_samples, 2)
 
                     # step 3
                     rho__ = rho_ - (self.eps_lf / 2) * g
 
                     # tempering
-                    beta_sqrt = RHVAESampler.tempering(k + 1, self.n_lf, self.beta_zero_sqrt)
+                    beta_sqrt = RHVAESampler.tempering(
+                        k + 1, self.n_lf, self.beta_zero_sqrt
+                    )
 
                     rho = (beta_sqrt_old / beta_sqrt) * rho__
                     beta_sqrt_old = beta_sqrt
@@ -223,7 +219,8 @@ class RHVAESampler(BaseSampler):
                         model.M_tens.unsqueeze(0)
                         * torch.exp(
                             -torch.norm(
-                                model.centroids_tens.unsqueeze(0) - z.unsqueeze(1), dim=-1
+                                model.centroids_tens.unsqueeze(0) - z.unsqueeze(1),
+                                dim=-1,
                             )
                             ** 2
                             / (model.temperature ** 2)

@@ -1,23 +1,17 @@
-import typing
-
 import torch
 import torch.nn as nn
 
-from pyraug.models.nn import *
+from pyraug.models.nn import BaseEncoder, BaseDecoder, BaseMetric
 
 
 class Encoder_MLP(BaseEncoder):
     def __init__(self, args: dict):
         BaseEncoder.__init__(self)
 
-        
-
         self.input_dim = args.input_dim
         self.latent_dim = args.latent_dim
 
-        self.layers = nn.Sequential(
-            nn.Linear(args.input_dim, 500),
-            nn.ReLU())
+        self.layers = nn.Sequential(nn.Linear(args.input_dim, 500), nn.ReLU())
         self.mu = nn.Linear(500, self.latent_dim)
         self.std = nn.Linear(500, self.latent_dim)
 
@@ -46,10 +40,12 @@ class Metric_MLP(BaseMetric):
         BaseMetric.__init__(self)
 
         if args.input_dim is None:
-            raise AttributeError("No input dimension provided !"
-            "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where "
-            "the shape of the data is [mini_batch x data_shape]. Unable to build metric " 
-            "automatically")
+            raise AttributeError(
+                "No input dimension provided !"
+                "'input_dim' parameter of ModelConfig instance must be set to 'data_shape' where "
+                "the shape of the data is [mini_batch x data_shape]. Unable to build metric "
+                "automatically"
+            )
 
         self.input_dim = args.input_dim
         self.latent_dim = args.latent_dim

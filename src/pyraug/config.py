@@ -1,13 +1,10 @@
-from typing import Union, Dict, Any
-
-import torch
 import json
 import os
 from dataclasses import asdict
-from pydantic.dataclasses import dataclass
-from pydantic import ValidationError
-from dataclasses import field
+from typing import Any, Dict, Union
 
+from pydantic import ValidationError
+from pydantic.dataclasses import dataclass
 
 
 @dataclass
@@ -18,7 +15,7 @@ class BaseConfig:
     @classmethod
     def from_dict(cls, config_dict: Dict[str, Any]) -> "BaseConfig":
         """Creates a :class:`~pyraug.config.BaseConfig` instance from a dictionnary
-        
+
         Args:
             config_dict (dict): The Python dictionnary containing all the parameters
 
@@ -29,7 +26,7 @@ class BaseConfig:
             config = cls(**config_dict)
         except (ValidationError, TypeError) as e:
             raise e
-        return config 
+        return config
 
     @classmethod
     def _dict_from_json(cls, json_path: Union[str, os.PathLike]) -> Dict[str, Any]:
@@ -40,7 +37,8 @@ class BaseConfig:
                     return config_dict
 
                 except (TypeError, json.JSONDecodeError) as e:
-                    raise TypeError(f"File {json_path} not loadable. Maybe not json ? \n"
+                    raise TypeError(
+                        f"File {json_path} not loadable. Maybe not json ? \n"
                         f"Catch Exception {type(e)} with message: " + str(e)
                     ) from e
 
@@ -52,38 +50,40 @@ class BaseConfig:
     @classmethod
     def from_json_file(cls, json_path: str) -> "BaseConfig":
         """Creates a :class:`~pyraug.config.BaseConfig` instance from a JSON config file
-        
+
         Args:
             json_path (str): The path to the json file containing all the parameters
 
         Returns:
-            :class:`BaseConfig`: The created instance   
+            :class:`BaseConfig`: The created instance
             """
-        
+
         config_dict = cls._dict_from_json(json_path)
         return cls.from_dict(config_dict)
 
     def to_dict(self) -> dict:
         """Transforms object into a Python dictionnary
-        
+
         Returns:
             (dict): The dictionnary containing all the parameters"""
         return asdict(self)
 
     def to_json_string(self):
         """Transforms object into a JSON string
-        
+
         Returns:
             (str): The JSON str containing all the parameters"""
         return json.dumps(self.to_dict())
 
     def save_json(self, dir_path, filename):
         """Saves a ``.json`` file from the dataclass
-        
+
         Args:
             dir_path (str): path to the folder
             filename (str): the name of the file
-            
+
         """
-        with open(os.path.join(dir_path, f"{filename}.json"), "w", encoding="utf-8") as fp:
+        with open(
+            os.path.join(dir_path, f"{filename}.json"), "w", encoding="utf-8"
+        ) as fp:
             fp.write(self.to_json_string())

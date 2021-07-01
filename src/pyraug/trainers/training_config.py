@@ -1,14 +1,16 @@
-from pyraug.config import BaseConfig
+from typing import Union
+
 from pydantic.dataclasses import dataclass
 
-from typing import Union
+from pyraug.config import BaseConfig
 
 
 @dataclass
 class TrainingConfig(BaseConfig):
     """
-    :class:`~pyraug.trainers.training_config.TrainingConfig` is the class in which all the training arguments are stored.
-    This instance is then provided to a :class:`~pyraug.trainers.Trainer` instance which performs 
+    :class:`~pyraug.trainers.training_config.TrainingConfig` is the class in which all the training arguments
+    are stored.
+    This instance is then provided to a :class:`~pyraug.trainers.Trainer` instance which performs
     a model training.
 
     Parameters:
@@ -28,24 +30,20 @@ class TrainingConfig(BaseConfig):
         eval_early_stopping (int): The maximal number of epochs authorized without eval loss
             improvement. If None no early stopping is performed. Default: None
 
-        steps_saving (int): A model checkpoint will be saved every `steps_saving` epoch 
+        steps_saving (int): A model checkpoint will be saved every `steps_saving` epoch
 
         seed (int): The random seed for reprodicibility
 
         no_cuda (bool): Disable `cuda` training. Default: False
 
         verbose (bool): Allow verbosity
-
-        
-    .. tip::
-        Scheduler will be added  
     """
 
     output_dir: str = None
     batch_size: int = 50
     max_epochs: int = 10000
     learning_rate: float = 1e-4
-    train_early_stopping:Union[int, None] = 50
+    train_early_stopping: Union[int, None] = 50
     eval_early_stopping: Union[int, None] = None
     steps_saving: Union[int, None] = None
     seed: int = 8

@@ -33,5 +33,6 @@ class MetricOutputError(Exception):
 class BadInheritanceError(Exception):
     pass
 
+
 class ModelError(Exception):
     pass
