@@ -54,8 +54,8 @@ In the main library, you will access to the following modules:
 - :ref:`pyraug.models`: This is the module where any Variational Autoencoder model is implemented. It is composed of:
 
     - :ref:`pyraug.models.nn`: The module gathers all the neural networks architectures for the encoders, decoders and metrics networks (if applicable) used within the models.
-    - :ref:`pyraug.models.base`: This is the base module of the VAE models.
-    - :ref:`pyraug.models.other_model`: By convention, each implemented model is contained within a folder located in :ref:`pyraug.models` in which are located 4 modules:
+    - pyraug.models.base: This is the base module of the VAE models.
+    - pyraug.models.other_model: By convention, each implemented model is contained within a folder located in :ref:`pyraug.models` in which are located 4 modules:
 
         - *model_config.py*: Contains a :class:`OtherModelConfig` instance inheriting from :class:`~pyraug.models.base.BaseModelConfig` where the model configuration is stored and a :class:`OtherModelSamplerConfig` instance inheriting from :class:`~pyraug.models.base.BaseSamplerConfig` where the configuration of the sampler used to generate new samples is defined.
         - *other_model_model.py*: An implementation of the other_model inheriting from :class:`~pyraug.models.BaseVAE`.
@@ -151,7 +151,7 @@ The generated data is stored in several ``.pt`` files in ``outputs/my_generated_
         
     See :ref:`setting your config` and tutorials for a more in depth example.
 
-
+.. _retrieve-generated-data:
 
 Retrieve generated data
 --------------------------------------------------
@@ -315,12 +315,6 @@ The generated data is in ``.pt`` files in ``dummy_output_dir/generation_YYYY-MM-
     See :ref:`setting your config` and tutorials for a more in depth example.
 
 
-Retrieve generated data
---------------------------------------------------
+Generated data can then be loaded pretty as explained in :ref:`retrieve-generated-data`
 
-Generated data can then be loaded pretty easily by running
 
-.. code-block:: python
-
-    >>> import torch
-    >>> data = torch.load('path/to/generated_data.pt')

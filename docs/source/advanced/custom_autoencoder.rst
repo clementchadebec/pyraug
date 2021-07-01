@@ -1,3 +1,5 @@
+.. _making-your-own-vae:
+
 ##################################
 Making your own autoencoder model
 ##################################
