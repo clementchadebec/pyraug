@@ -100,11 +100,11 @@ To launch a model training, you only need to call a :class:`~pyraug.pipelines.Tr
 In its most basic version the :class:`~pyraug.pipelines.TrainingPipeline` can be built without any arguments.
 This will by default train a :class:`~pyraug.models.RHVAE` model with default autoencoding architecture and parameters.
 
-.. code-block:: python
-
-    >>> from pyraug.pipelines import TrainingPipeline
-    >>> pipeline = TrainingPipeline()
-    >>> pipeline(train_data=dataset_to_augment)
+```python
+>>> from pyraug.pipelines import TrainingPipeline
+>>> pipeline = TrainingPipeline()
+>>> pipeline(train_data=dataset_to_augment)
+```
 
 where ``dataset_to_augment`` is either a `numpy.ndarray`, `torch.Tensor` or a path to a folder where each file is a data (handled data format are ``.pt``, ``.nii``, ``.nii.gz``, ``.bmp``, ``.jpg``, ``.jpeg``, ``.png``). 
 
@@ -143,11 +143,11 @@ In case you instantiate yourself a model as shown above and you do not provided 
 
 Then the :class:`~pyraug.pipelines.TrainingPipeline` can be launched by running:
 
-.. code-block:: python
-
-    >>> from pyraug.pipelines import TrainingPipeline
-    >>> pipe = TrainingPipeline(model=model)
-    >>> pipe(train_data=dataset_to_augment)
+```python
+>>> from pyraug.pipelines import TrainingPipeline
+>>> pipe = TrainingPipeline(model=model)
+>>> pipe(train_data=dataset_to_augment)
+```
 
 At the end of training, the model weights ``models.pt`` and model config ``model_config.json`` file 
 will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-mm-ss/final_model``. 
