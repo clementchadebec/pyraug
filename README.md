@@ -206,18 +206,17 @@ If you use this library please consider citing us:
 	title = {Data {Augmentation} in {High} {Dimensional} {Low} {Sample} {Size} {Setting} {Using} a {Geometry}-{Based} {Variational} {Autoencoder}},
 	copyright = {All rights reserved},
 	journal = {arXiv preprint arXiv:2105.00026},
-  	arxiv= {2105.00026},
+  	arxiv = {2105.00026},
 	author = {Chadebec, Clément and Thibeau-Sutre, Elina and Burgos, Ninon and Allassonnière, Stéphanie},
-	year = {2021},
+	year = {2021}
 }
 
 @article{chadebec_geometry-aware_2020,
-    abbr={preprint},
 	title = {Geometry-{Aware} {Hamiltonian} {Variational} {Auto}-{Encoder}},
 	copyright = {All rights reserved},
 	journal = {arXiv preprint arXiv:2010.11518},
-    arxiv= {2010.11518},
+    arxiv = {2010.11518},
 	author = {Chadebec, Clément and Mantoux, Clément and Allassonnière, Stéphanie},
-	year = {2020},
+	year = {2020}
 }
 ```
