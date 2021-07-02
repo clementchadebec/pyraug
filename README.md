@@ -121,20 +121,7 @@ More generally, you can instantiate your own model and train it with the `Traini
 ```
 
 
-In case you instantiate yourself a model as shown above and you do not provided all the network architectures (encoder, decoder & metric if applicable), the `ModelConfig` instance will expect you to provide the input dimension of your data which equals to ``n_channels x height x width x ...``. Pyraug's VAE models' networks indeed default to Multi Layer Perceptron neural networks which automatically adapt to the input data shape. Hence, if you do not provided any input dimension an error is raised:
-
-```python
-    >>> from pyraug.models.base.base_config import BaseModelConfig
-    >>> from pyraug.models import BaseVAE
-    >>> config = BaseModelConfig()
-    >>> BaseVAE(model_config=config)
-        Traceback (most recent call last):
-          File "<stdin>", line 1, in <module>
-          File "/home/clement/Documents/these/implem/pyraug/src/pyraug/models/base/base_vae.py", line 57, in __init__
-            raise AttributeError("No input dimension provided !"
-        AttributeError: No input dimension provided !'input_dim' parameter of 
-            BaseModelConfig instance must be set to 'data_shape' where the shape of the data is [mini_batch x data_shape] . Unable to build encoder automatically
-```
+In case you instantiate yourself a model as shown above and you do not provided all the network architectures (encoder, decoder & metric if applicable), the `ModelConfig` instance will expect you to provide the input dimension of your data which equals to ``n_channels x height x width x ...``. Pyraug's VAE models' networks indeed default to Multi Layer Perceptron neural networks which automatically adapt to the input data shape. 
 
 **note**: In case you have different size of data, Pyraug will reshape it to the minimum size ``min_n_channels xmin_height x min_width x ...``
 
@@ -161,12 +148,9 @@ To launch the data generation process from a trained model, run the following.
 
 ```python
 >>> from pyraug.pipelines import GenerationPipeline
->>> model = MODEL.load_from_folder(
-...     'path/to/your/trained/model'
-... ) # reload the model
->>> pipe = GenerationPipeline(
-...    model=model
-... ) # define pipeline
+>>> from pyraug.models import RHVAE
+>>> model = RHVAE.load_from_folder('path/to/your/trained/model') # reload the model
+>>> pipe = GenerationPipeline(model=model) # define pipeline
 >>> pipe(samples_number=10) # This will generate 10 data points
 ```
 
