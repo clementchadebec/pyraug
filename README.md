@@ -90,8 +90,7 @@ Generated data can then be loaded pretty easily by running
 Pyraug also provides two pipelines that may be uses to either train a model on your own data or generate new data with a pretrained model.
 
 
-.. tip::
-    These pipelines are independent of the choice of the model and sampler. Hence, they can be used even if you want to access to more advanced feature such as defining your own autoencoding architecture. 
+**note**: These pipelines are independent of the choice of the model and sampler. Hence, they can be used even if you want to access to more advanced feature such as defining your own autoencoding architecture. 
 
 ### Launching a model training
 
