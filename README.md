@@ -207,7 +207,7 @@ If you use this library please consider citing us:
 	title = {Geometry-{Aware} {Hamiltonian} {Variational} {Auto}-{Encoder}},
 	copyright = {All rights reserved},
 	journal = {arXiv preprint arXiv:2010.11518},
-    arxiv = {2010.11518},
+    	arxiv = {2010.11518},
 	author = {Chadebec, Clément and Mantoux, Clément and Allassonnière, Stéphanie},
 	year = {2020}
 }
