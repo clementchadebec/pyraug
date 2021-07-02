@@ -202,14 +202,6 @@ See more details in the [documentation]
 If you use this library please consider citing us:
 
 ```bibtex
-@article{chadebec_data_2021,
-	title = {Data {Augmentation} in {High} {Dimensional} {Low} {Sample} {Size} {Setting} {Using} a {Geometry}-{Based} {Variational} {Autoencoder}},
-	copyright = {All rights reserved},
-	journal = {arXiv preprint arXiv:2105.00026},
-  	arxiv = {2105.00026},
-	author = {Chadebec, Clément and Thibeau-Sutre, Elina and Burgos, Ninon and Allassonnière, Stéphanie},
-	year = {2021}
-}
 
 @article{chadebec_geometry-aware_2020,
 	title = {Geometry-{Aware} {Hamiltonian} {Variational} {Auto}-{Encoder}},
@@ -219,5 +211,15 @@ If you use this library please consider citing us:
 	author = {Chadebec, Clément and Mantoux, Clément and Allassonnière, Stéphanie},
 	year = {2020}
 }
+
+@article{chadebec_data_2021,
+	title = {Data {Augmentation} in {High} {Dimensional} {Low} {Sample} {Size} {Setting} {Using} a {Geometry}-{Based} {Variational} {Autoencoder}},
+	copyright = {All rights reserved},
+	journal = {arXiv preprint arXiv:2105.00026},
+  	arxiv = {2105.00026},
+	author = {Chadebec, Clément and Thibeau-Sutre, Elina and Burgos, Ninon and Allassonnière, Stéphanie},
+	year = {2021}
+}
+
 
 ```
