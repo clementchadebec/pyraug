@@ -210,6 +210,8 @@ If you use this library please consider citing us:
 	author = {Chadebec, Clément and Thibeau-Sutre, Elina and Burgos, Ninon and Allassonnière, Stéphanie},
 	year = {2021}
 }
+```
+```bibtex
 @article{chadebec_geometry-aware_2020,
 	title = {Geometry-{Aware} {Hamiltonian} {Variational} {Auto}-{Encoder}},
 	copyright = {All rights reserved},
