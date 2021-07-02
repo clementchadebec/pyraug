@@ -1,36 +1,34 @@
 
 
-##################################
-Getting started
-##################################
+# Getting started
 
 
 
-************************************************
-Description
-************************************************
+
+
+## Description
+
 
 This library provides a way to perform Data Augmentation using Variational Autoencoders in a 
 reliable way even in challenging contexts such as high dimensional and low sample size 
 data.
 
-************************************************
-Installation
-************************************************
+
+## Installation
+
 
 To install the library run the following using ``pip``
 
-.. code-block:: bash
-
-    $ pip install pyraug 
+```bash
+$ pip install pyraug
+``` 
 
 
 or alternatively you can clone the github repo to access to tests, tutorials and scripts.
 
-.. code-block:: bash
-
-    $ git clone 
-
+```
+$ git clone 
+```
 
 ************************************************
 Pyraug's spirit & overview
@@ -75,28 +73,26 @@ Please see the full module description for further details.
 
 
 
-************************************************
-Augmenting your Data
-************************************************
+
+## Augmenting your Data
+
 
 In Pyraug, a typical augmentation process is divided into 2 distinct parts:
 
-    - Training a model using the Pyraug's :class:`~pyraug.pipelines.TrainingPipeline` or using the provided ``scripts/training.py`` script
-    - Generating new data from a trained model using Pyraug's :class:`~pyraug.pipelines.GenerationPipeline` or using the provided ``scripts/generation.py`` script
+1. Train a model using the Pyraug's ```TrainingPipeline``` or using the provided ``scripts/training.py`` script
+2. Generate new data from a trained model using Pyraug's :class:```GenerationPipeline``` or using the provided ``scripts/generation.py`` script
 
 There exist two ways to augment your data pretty straightforwardly using Pyraug's built-in functions. 
 
-    
 
+### Using the provided scripts
 
-Using the provided scripts
-=================================================
 
 Pyraug provides two scripts allowing you to augment your data directly with commandlines.
 
-.. note::
-    To access to the predefined scripts you should first clone the Pyraug's repository.
-    The following scripts are located in ``pyraug/scripts`` folder. For the time being, only :class:`~pyraug.models.RHVAE` model training and generation is handled by the provided scripts. Models will be added as they are implemented in :ref:`pyraug.models` 
+
+**note**: To access to the predefined scripts you should first clone the Pyraug's repository.
+The following scripts are located in ``pyraug/scripts`` folder. For the time being, only `RHVAE` modeltraining and generation is handled by the provided scripts. Models will be added as they are implemented in :ref:`pyraug.models` 
 
 Launching a model training:
 --------------------------------------------------
