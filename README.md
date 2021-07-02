@@ -219,4 +219,5 @@ If you use this library please consider citing us:
 	author = {Chadebec, Clément and Mantoux, Clément and Allassonnière, Stéphanie},
 	year = {2020}
 }
+
 ```
