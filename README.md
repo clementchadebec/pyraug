@@ -32,6 +32,90 @@ In Pyraug, a typical augmentation process is divided into 2 distinct parts:
 
 There exist two ways to augment your data pretty straightforwardly using Pyraug's built-in functions. 
 
+
+## Using Pyraug's Pipelines
+
+Pyraug also provides two pipelines that may be uses to either train a model on your own data or generate new data with a pretrained model.
+
+
+**note**: These pipelines are independent of the choice of the model and sampler. Hence, they can be used even if you want to access to more advanced feature such as defining your own autoencoding architecture. 
+
+### Launching a model training
+
+
+To launch a model training, you only need to call a `TrainingPipeline` instance. 
+In its most basic version the `TrainingPipeline` can be built without any arguments.
+This will by default train a `RHVAE` model with default autoencoding architecture and parameters.
+
+```python
+>>> from pyraug.pipelines import TrainingPipeline
+>>> pipeline = TrainingPipeline()
+>>> pipeline(train_data=dataset_to_augment)
+```
+
+where ``dataset_to_augment`` is either a `numpy.ndarray`, `torch.Tensor` or a path to a folder where each file is a data (handled data format are ``.pt``, ``.nii``, ``.nii.gz``, ``.bmp``, ``.jpg``, ``.jpeg``, ``.png``). 
+
+More generally, you can instantiate your own model and train it with the `TrainingPipeline`. For instance, if you want to instantiate a basic `RHVAE` run:
+
+
+```python
+>>> from pyraug.models import RHVAE
+>>> from pyraug.models.rhvae import RHVAEConfig
+>>> model_config = RHVAEConfig(
+...    input_dim=int(intput_dim)
+... ) # input_dim is the shape of a flatten input data
+...   # needed if you do not provided your own architectures
+>>> model = RHVAE(model_config)
+```
+
+
+In case you instantiate yourself a model as shown above and you do not provided all the network architectures (encoder, decoder & metric if applicable), the `ModelConfig` instance will expect you to provide the input dimension of your data which equals to ``n_channels x height x width x ...``. Pyraug's VAE models' networks indeed default to Multi Layer Perceptron neural networks which automatically adapt to the input data shape. 
+
+**note**: In case you have different size of data, Pyraug will reshape it to the minimum size ``min_n_channels x min_height x min_width x ...``
+
+
+
+Then the `TrainingPipeline` can be launched by running:
+
+```python
+>>> from pyraug.pipelines import TrainingPipeline
+>>> pipe = TrainingPipeline(model=model)
+>>> pipe(train_data=dataset_to_augment)
+```
+
+At the end of training, the model weights ``models.pt`` and model config ``model_config.json`` file 
+will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-mm-ss/final_model``. 
+
+**Important**: For high dimensional data we advice you to provide you own network architectures and potentially adapt the training and model parameters see [documentation] for more details.
+
+
+### Launching data generation
+
+
+To launch the data generation process from a trained model, run the following.
+
+```python
+>>> from pyraug.pipelines import GenerationPipeline
+>>> from pyraug.models import RHVAE
+>>> model = RHVAE.load_from_folder('path/to/your/trained/model') # reload the model
+>>> pipe = GenerationPipeline(model=model) # define pipeline
+>>> pipe(samples_number=10) # This will generate 10 data points
+```
+
+The generated data is in ``.pt`` files in ``dummy_output_dir/generation_YYYY-MM-DD_hh-mm-ss``. By default, it stores batch data of 500 samples.
+
+
+
+### Retrieve generated data
+
+Generated data can then be loaded pretty easily by running
+
+```python
+>>> import torch
+>>> data = torch.load('path/to/generated_data.pt')
+
+```
+
 ## Using the provided scripts
 
 
@@ -83,89 +167,6 @@ Generated data can then be loaded pretty easily by running
 ```python
 >>> import torch
 >>> data = torch.load('path/to/generated_data.pt')
-```
-
-## Using Pyraug's Pipelines
-
-Pyraug also provides two pipelines that may be uses to either train a model on your own data or generate new data with a pretrained model.
-
-
-**note**: These pipelines are independent of the choice of the model and sampler. Hence, they can be used even if you want to access to more advanced feature such as defining your own autoencoding architecture. 
-
-### Launching a model training
-
-
-To launch a model training, you only need to call a `TrainingPipeline` instance. 
-In its most basic version the `TrainingPipeline` can be built without any arguments.
-This will by default train a `RHVAE` model with default autoencoding architecture and parameters.
-
-```python
->>> from pyraug.pipelines import TrainingPipeline
->>> pipeline = TrainingPipeline()
->>> pipeline(train_data=dataset_to_augment)
-```
-
-where ``dataset_to_augment`` is either a `numpy.ndarray`, `torch.Tensor` or a path to a folder where each file is a data (handled data format are ``.pt``, ``.nii``, ``.nii.gz``, ``.bmp``, ``.jpg``, ``.jpeg``, ``.png``). 
-
-More generally, you can instantiate your own model and train it with the `TrainingPipeline`. For instance, if you want to instantiate a basic `RHVAE` run:
-
-
-```python
->>> from pyraug.models import RHVAE
->>> from pyraug.models.rhvae import RHVAEConfig
->>> model_config = RHVAEConfig(
-...    input_dim=int(intput_dim)
-... ) # input_dim is the shape of a flatten input data
-...   # needed if you do not provided your own architectures
->>> model = RHVAE(model_config)
-```
-
-
-In case you instantiate yourself a model as shown above and you do not provided all the network architectures (encoder, decoder & metric if applicable), the `ModelConfig` instance will expect you to provide the input dimension of your data which equals to ``n_channels x height x width x ...``. Pyraug's VAE models' networks indeed default to Multi Layer Perceptron neural networks which automatically adapt to the input data shape. 
-
-**note**: In case you have different size of data, Pyraug will reshape it to the minimum size ``min_n_channels xmin_height x min_width x ...``
-
-
-
-Then the `TrainingPipeline` can be launched by running:
-
-```python
->>> from pyraug.pipelines import TrainingPipeline
->>> pipe = TrainingPipeline(model=model)
->>> pipe(train_data=dataset_to_augment)
-```
-
-At the end of training, the model weights ``models.pt`` and model config ``model_config.json`` file 
-will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-mm-ss/final_model``. 
-
-**Important**: For high dimensional data we advice you to provide you own network architectures and potentially adapt the training and model parameters see [documentation] for more details.
-
-
-### Launching data generation
-
-
-To launch the data generation process from a trained model, run the following.
-
-```python
->>> from pyraug.pipelines import GenerationPipeline
->>> from pyraug.models import RHVAE
->>> model = RHVAE.load_from_folder('path/to/your/trained/model') # reload the model
->>> pipe = GenerationPipeline(model=model) # define pipeline
->>> pipe(samples_number=10) # This will generate 10 data points
-```
-
-The generated data is in ``.pt`` files in ``dummy_output_dir/generation_YYYY-MM-DD_hh-mm-ss``. By default, it stores batch data of 500 samples.
-
-
-
-### Retrieve generated data
-
-Generated data can then be loaded pretty easily by running
-
-```python
->>> import torch
->>> data = torch.load('path/to/generated_data.pt')
-
 ```
 
 
