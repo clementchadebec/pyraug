@@ -95,9 +95,9 @@ Pyraug also provides two pipelines that may be uses to either train a model on y
 ### Launching a model training
 
 
-To launch a model training, you only need to call a :class:`~pyraug.pipelines.TrainingPipeline` instance. 
-In its most basic version the :class:`~pyraug.pipelines.TrainingPipeline` can be built without any arguments.
-This will by default train a :class:`~pyraug.models.RHVAE` model with default autoencoding architecture and parameters.
+To launch a model training, you only need to call a `TrainingPipeline` instance. 
+In its most basic version the `TrainingPipeline` can be built without any arguments.
+This will by default train a `RHVAE` model with default autoencoding architecture and parameters.
 
 ```python
 >>> from pyraug.pipelines import TrainingPipeline
@@ -140,7 +140,7 @@ In case you instantiate yourself a model as shown above and you do not provided 
 
 
 
-Then the :class:`~pyraug.pipelines.TrainingPipeline` can be launched by running:
+Then the `TrainingPipeline` can be launched by running:
 
 ```python
 >>> from pyraug.pipelines import TrainingPipeline
@@ -196,3 +196,28 @@ provide tutorial that you can found in [examples folder](https://github.com/clem
 - [making_your_own_autoencoder.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to pass your own networks to the models implemented in Pyraug. 
 
 See more details in the [documentation]
+
+## Citing
+
+If you use this library please consider citing us:
+
+```bibtex
+@article{chadebec_data_2021,
+	title = {Data {Augmentation} in {High} {Dimensional} {Low} {Sample} {Size} {Setting} {Using} a {Geometry}-{Based} {Variational} {Autoencoder}},
+	copyright = {All rights reserved},
+	journal = {arXiv preprint arXiv:2105.00026},
+  	arxiv= {2105.00026},
+	author = {Chadebec, Clément and Thibeau-Sutre, Elina and Burgos, Ninon and Allassonnière, Stéphanie},
+	year = {2021},
+}
+
+@article{chadebec_geometry-aware_2020,
+    abbr={preprint},
+	title = {Geometry-{Aware} {Hamiltonian} {Variational} {Auto}-{Encoder}},
+	copyright = {All rights reserved},
+	journal = {arXiv preprint arXiv:2010.11518},
+    arxiv= {2010.11518},
+	author = {Chadebec, Clément and Mantoux, Clément and Allassonnière, Stéphanie},
+	year = {2020},
+}
+```
