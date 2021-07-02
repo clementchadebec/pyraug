@@ -85,7 +85,7 @@ Generated data can then be loaded pretty easily by running
 >>> data = torch.load('path/to/generated_data.pt')
 ```
 
-### Using Pyraug's Pipelines
+## Using Pyraug's Pipelines
 
 Pyraug also provides two pipelines that may be uses to either train a model on your own data or generate new data with a pretrained model.
 
@@ -93,8 +93,8 @@ Pyraug also provides two pipelines that may be uses to either train a model on y
 .. tip::
     These pipelines are independent of the choice of the model and sampler. Hence, they can be used even if you want to access to more advanced feature such as defining your own autoencoding architecture. 
 
-Launching a model training
---------------------------------------------------
+### Launching a model training
+
 
 To launch a model training, you only need to call a :class:`~pyraug.pipelines.TrainingPipeline` instance. 
 In its most basic version the :class:`~pyraug.pipelines.TrainingPipeline` can be built without any arguments.
