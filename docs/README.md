@@ -5,7 +5,7 @@ To generate the documentation locally, do the following:
 
 - Make sur you installed the requirement at the root of this repo
     ```
-    pip install -r requirements.txt
+    pip install -r ../requirements.txt
     ```
 
 - Install [sphinx](https://www.sphinx-doc.org/en/master/usage/quickstart.html) with pip and dependencies
