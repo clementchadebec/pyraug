@@ -16,11 +16,11 @@ $ pip install pyraug
 ``` 
 
 
-or alternatively you can clone the github repo and install the library to access to tests, tutorials and scripts.
+or alternatively you can clone the github repo to access to tests, tutorials and scripts.
 ```bash
 $ git clone https://github.com/clementchadebec/pyraug.git
 ```
-
+and install the library
 ```bash
 $ pip install .
 ``` 
