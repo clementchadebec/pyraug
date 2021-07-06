@@ -188,7 +188,7 @@ See more details in the [documentation]
 
 ## Dealing with issues
 
-If you are experiencing any issues while running the code and request new features please [open an issue on github](https://github.com/clementchadebec/pyraug/issues)
+If you are experiencing any issues while running the code or request new features please [open an issue on github](https://github.com/clementchadebec/pyraug/issues)
 
 
 ## Citing
