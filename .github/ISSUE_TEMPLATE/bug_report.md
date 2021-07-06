@@ -16,8 +16,7 @@ Steps to reproduce the behavior:
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
-
-<!-- If possible please also provide code snippets or errors -->
+**If possible please also provide code snippets or errors**
 
 
 **Expected behavior**
