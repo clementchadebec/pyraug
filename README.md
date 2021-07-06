@@ -22,6 +22,7 @@ $ git clone https://github.com/clementchadebec/pyraug.git
 ```
 and install the library
 ```bash
+$ cd pyraug
 $ pip install .
 ``` 
 
