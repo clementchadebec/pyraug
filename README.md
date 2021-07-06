@@ -18,8 +18,12 @@ $ pip install pyraug
 
 or alternatively you can clone the github repo and install the library to access to tests, tutorials and scripts.
 ```bash
-$ pip install .
+$ git clone https://github.com/clementchadebec/pyraug.git
 ```
+
+```bash
+$ pip install .
+``` 
 
 # Augmenting your Data
 
