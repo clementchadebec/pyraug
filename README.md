@@ -6,8 +6,6 @@
 <p>
 	
 # Pyraug 
-------------------------------------------------
-
 
 This library provides a way to perform Data Augmentation using Variational Autoencoders in a 
 reliable way even in challenging contexts such as high dimensional and low sample size 
