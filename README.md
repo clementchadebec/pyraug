@@ -9,7 +9,7 @@ data.
 
 # Installation
 
-To install the library run the following using ``pip``
+To install the library run the following using ``pip`` (availabel as soon as licence is issued)
 
 ```bash
 $ pip install pyraug
