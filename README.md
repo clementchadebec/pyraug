@@ -3,7 +3,7 @@
     <br>
     <img src="https://github.com/clementchadebec/pyraug/blob/main/docs/source/imgs/logo_pyraug_2.jpeg" width="400"/>
     <br>
-    <p credit: [Saullu]https://github.com/SaulLu </p>
+    <a href="https://github.com/huggingface/transformers/blob/master/README.md">
 <p>
 	
 # Pyraug 
