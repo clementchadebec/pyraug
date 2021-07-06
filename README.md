@@ -3,7 +3,9 @@
     <br>
     <img src="https://github.com/clementchadebec/pyraug/blob/main/docs/source/imgs/logo_pyraug_2.jpeg" width="400"/>
     <br>
-    credit: <a href="https://github.com/huggingface/transformers/blob/master/README.md"> Lucile Saulnier	
+    <div>
+    credit: <a href="https://github.com/huggingface/transformers/blob/master/README.md"> Lucile Saulnier
+	    </div>
 <p>
 
 	
