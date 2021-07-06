@@ -24,4 +24,4 @@ To generate the documentation locally, do the following:
 
 **note** do not pay attention the logs warnings
 
-Then go to `build\html` folder and open the `intex.html` file (in a browser for example)
+Then go to `build` folder and open the `intex.html` file (in a browser for example)
