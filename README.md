@@ -2,10 +2,9 @@
 <p align="center">
     <br>
     <img src="https://github.com/clementchadebec/pyraug/blob/main/docs/source/imgs/logo_pyraug_2.jpeg" width="400"/>
+	<a credit: [Saullu]https://github.com/SaulLu />
     <br>
 <p>
-
-	credit: [Saullu]https://github.com/SaulLu
 	
 # Pyraug 
 
