@@ -9,7 +9,7 @@ data.
 
 # Installation
 
-To install the library run the following using ``pip``
+To install the library run the following using ``pip`` (available as soon as licence is issued)
 
 ```bash
 $ pip install pyraug
@@ -18,8 +18,9 @@ $ pip install pyraug
 
 or alternatively you can clone the github repo to access to tests, tutorials and scripts.
 
-```
-$ git clone 
+Finally, install dependencies
+```bash
+$ pip install -r requirements.txt
 ```
 
 # Augmenting your Data
