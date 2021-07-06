@@ -3,9 +3,6 @@
     <br>
     <img src="https://github.com/clementchadebec/pyraug/blob/main/docs/source/imgs/logo_pyraug_2.jpeg" width="400"/>
     <br>
-	<p align="center">
-    credit: <a href="https://github.com/saullu"> SaulLu
-		    </p>
 </p>
 
 	
@@ -227,3 +224,9 @@ If you use this library please consider citing us:
 
 
 ```
+
+### Credits
+<p align="center">
+    Logo: <a href="https://github.com/saullu"> SaulLu
+</p>
+
