@@ -18,8 +18,9 @@ $ pip install pyraug
 
 or alternatively you can clone the github repo to access to tests, tutorials and scripts.
 
-```
-$ git clone 
+Finally, install dependencies
+```bash
+$ pip install -r requirements.txt
 ```
 
 # Augmenting your Data
