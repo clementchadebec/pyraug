@@ -3,12 +3,10 @@
     <br>
     <img src="https://github.com/clementchadebec/pyraug/blob/main/docs/source/imgs/logo_pyraug_2.jpeg" width="400"/>
     <br>
-    <div>
-	    <p align="center">
+	<p align="center">
     credit: <a href="https://github.com/saullu"> SaulLu
 		    </p>
-	    </div>
-<p>
+</p>
 
 	
 	
