@@ -9,18 +9,16 @@ data.
 
 # Installation
 
-To install the library run the following using ``pip`` (available as soon as licence is issued)
+To install the library from [pypi.org](https://pypi.org/) run the following using ``pip`` (available as soon as licence is issued)
 
 ```bash
 $ pip install pyraug
 ``` 
 
 
-or alternatively you can clone the github repo to access to tests, tutorials and scripts.
-
-Finally, install dependencies
+or alternatively you can clone the github repo and install the library to access to tests, tutorials and scripts.
 ```bash
-$ pip install -r requirements.txt
+$ pip install .
 ```
 
 # Augmenting your Data
