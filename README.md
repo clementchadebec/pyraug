@@ -1,6 +1,10 @@
 # Pyraug
 ------------------------------------------------
-![alt text](https://github.com/clementchadebec/pyraug/blob/main/docs/source/imgs/logo_pyraug_2.jpeg)
+<p align="center">
+    <br>
+    <img src="https://github.com/clementchadebec/pyraug/blob/main/docs/source/imgs/logo_pyraug_2.jpeg" width="400"/>
+    <br>
+<p>
 
 This library provides a way to perform Data Augmentation using Variational Autoencoders in a 
 reliable way even in challenging contexts such as high dimensional and low sample size 
