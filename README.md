@@ -226,7 +226,4 @@ If you use this library please consider citing us:
 ```
 
 ### Credits
-<p align="center">
-    Logo: <a href="https://github.com/saullu"> SaulLu
-</p>
-
+Logo: [SaulLu](https://github.com/saullu)
