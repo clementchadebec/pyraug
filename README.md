@@ -231,3 +231,6 @@ If you use this library please consider citing us:
 
 
 ```
+
+### Credits
+Logo: [SaulLu](https://github.com/saullu)
