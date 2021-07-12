@@ -1,9 +1,12 @@
-# Pyraug 
+
 <p align="center">
     <br>
     <img src="https://github.com/clementchadebec/pyraug/blob/main/docs/source/imgs/logo_pyraug_2.jpeg" width="400"/>
     <br>
 <p>
+credit: [Saullu]https://github.com/SaulLu
+
+# Pyraug 
 ------------------------------------------------
 
 
@@ -190,6 +193,12 @@ provide tutorial that you can found in [examples folder](https://github.com/clem
 - [making_your_own_autoencoder.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to pass your own networks to the models implemented in Pyraug. 
 
 See more details in the [documentation]
+
+## Troubleshooter
+
+In case you obtain math errors (nan, values out of distribution support...) try 1) decreasing the learning rate in the `TrainingConfig` class, 2) decreasing `eps_lf` in the `RHVAEConfig`, 3) increasing the temperature `T` i the `RHVAEConfig`. See documentation ........... add correct section.
+
+
 
 ## Dealing with issues
 
