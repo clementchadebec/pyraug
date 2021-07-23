@@ -166,9 +166,9 @@ class RHVAESampler(BaseSampler):
                     rho_ = rho - (self.eps_lf / 2) * g
 
                     # step 2
-                    z_ = z + self.eps_lf * rho_
+                    z = z + self.eps_lf * rho_
 
-                    g = -self.grad_func(z_, self.model).reshape(
+                    g = -self.grad_func(z, self.model).reshape(
                         n_samples, self.model.latent_dim
                     )
                     # g = (Sigma_inv @ (z - mu).T).reshape(n_samples, 2)
@@ -189,7 +189,7 @@ class RHVAESampler(BaseSampler):
                 acc = torch.rand(n_samples).to(self.device)
                 moves = (acc < alpha).type(torch.int).reshape(n_samples, 1)
 
-                z = z_ * moves + (1 - moves) * z0
+                z = z * moves + (1 - moves) * z0
 
                 z0 = z
 
