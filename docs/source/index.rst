@@ -31,21 +31,3 @@ This library implements the
    pyraug.trainer
    pipelines/pyraug.pipelines
    pyraug.config
-
-
-.. note::
-   This is important
-
-
-You can represent code blocks fairly easily::
-
-   import numpy as np
-   x = np.random.rand(12)
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
