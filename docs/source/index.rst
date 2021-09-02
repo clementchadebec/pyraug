@@ -8,8 +8,6 @@ Welcome to pyraug's documentation!
 **********************************
 
 This a new library to perform Data Augmentation in a reliable manner with Variational Autoencoders!
-This library implements the  
-
 
 .. toctree::
    :maxdepth: 2
