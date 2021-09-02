@@ -193,7 +193,7 @@ To help you to understand the way Pyraug works and how you can augment your data
 provide tutorial that you can found in [examples folder](https://github.com/clementchadebec/pyraug/tree/main/examples). In particular, you will learn to:
 
 - [getting_started.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) explains you how to train a model and generate new data using Pyraug's Pipelines
-- [playing _with_configs.ipynb]  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/https://github.com/clementchadebec/pyraug/blob/main/examples/making_your_own_autoencoder.ipynb) shows you how to amend the predefined configuration to adapt them to you data
+- **playing _with_configs.ipynb**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/https://github.com/clementchadebec/pyraug/blob/main/examples/making_your_own_autoencoder.ipynb) shows you how to amend the predefined configuration to adapt them to you data
 - [making_your_own_autoencoder.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to pass your own networks to the models implemented in Pyraug. 
 
 See more details in the [documentation]
