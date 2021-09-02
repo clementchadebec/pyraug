@@ -2,6 +2,9 @@
 pyraug.models
 **********************************
 
+.. automodule::
+    pyraug.models
+
 .. toctree::
     :maxdepth: 1
 
@@ -13,6 +16,3 @@ pyraug.models
     ~pyraug.models.BaseVAE
     ~pyraug.models.RHVAE
     :nosignatures:
-
-.. automodule::
-    pyraug.models

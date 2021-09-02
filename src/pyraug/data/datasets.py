@@ -1,4 +1,4 @@
-"""The pyraug's Datatsets inherit from
+"""The pyraug's Datasets inherit from
 :class:`torch.utils.data.Dataset` and must be used to convert the data before
 training. As of today, it only contains the :class:`pyraug.data.BaseDatset` useful to train a
 VAE model but other Datatsets will be added as models are added.
