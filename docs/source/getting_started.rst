@@ -25,7 +25,7 @@ or alternatively you can clone the github repo to access to tests, tutorials and
 
 .. code-block:: bash
 
-    $ git clone 
+    $ https://github.com/clementchadebec/pyraug.git
 
 
 ************************************************
