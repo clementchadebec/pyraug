@@ -64,8 +64,6 @@ def main(args):
     train_data = data_processor.process_data(train_data)
     train_dataset = DataProcessor.to_dataset(train_data)
 
-    print(train_dataset.data.shape, train_dataset.data.max())
-
     # set input dimension automatically
     model_config.input_dim = int(np.prod(train_dataset.data.shape[1:]))
 

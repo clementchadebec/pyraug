@@ -72,7 +72,7 @@ class RHVAESampler(BaseSampler):
         if not os.path.exists(sampling_dir):
             os.makedirs(sampling_dir)
             logger.info(
-                f"Created {sampling_dir}."
+                f"Created {sampling_dir}. "
                 "Generated data and sampler config will be saved here.\n"
             )
 
