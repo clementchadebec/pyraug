@@ -1,5 +1,4 @@
-**This will be removed since docs will go to readthedocs.io as soon as licence is issued**
-
+**The latest version of the documentation is available on [readthedocs](https://pyraug.readthedocs.io/en/latest/)** 
 
 To generate the documentation locally, do the following:
 
