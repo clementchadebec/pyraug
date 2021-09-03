@@ -14,6 +14,8 @@ examples/my_model/*
 examples/my_model_with_custom_archi/*
 examples/my_generated_data_with_custom_parameters/*
 examples/my_model_with_custom_parameters/*
+examples/dummy_output_dir/
+
 
 
 
