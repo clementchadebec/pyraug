@@ -61,10 +61,10 @@ There exist two ways to augment your data pretty straightforwardly using Pyraug'
 
 ## Using Pyraug's Pipelines
 
-Pyraug also provides two pipelines that may be uses to either train a model on your own data or generate new data with a pretrained model.
+Pyraug provides two pipelines that may be used to either train a model on your own data or generate new data with a pretrained model.
 
 
-**note**: These pipelines are independent of the choice of the model and sampler. Hence, they can be used even if you want to access to more advanced feature such as defining your own autoencoding architecture. 
+**note**: These pipelines are independent of the choice of the model and sampler. Hence, they can be used even if you want to access to more advanced features such as defining your own autoencoding architecture. 
 
 ### Launching a model training
 
@@ -112,7 +112,7 @@ Then the `TrainingPipeline` can be launched by running:
 At the end of training, the model weights ``models.pt`` and model config ``model_config.json`` file 
 will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-mm-ss/final_model``. 
 
-**Important**: For high dimensional data we advice you to provide you own network architectures and potentially adapt the training and model parameters see [documentation] for more details.
+**Important**: For high dimensional data we advice you to provide you own network architectures and potentially adapt the training and model parameters see [documentation](https://pyraug.readthedocs.io/en/latest/advanced_use.html) for more details.
 
 
 ### Launching data generation
@@ -128,7 +128,7 @@ To launch the data generation process from a trained model, run the following.
 >>> pipe(samples_number=10) # This will generate 10 data points
 ```
 
-The generated data is in ``.pt`` files in ``dummy_output_dir/generation_YYYY-MM-DD_hh-mm-ss``. By default, it stores batch data of 500 samples.
+The generated data is in ``.pt`` files in ``dummy_output_dir/generation_YYYY-MM-DD_hh-mm-ss``. By default, it stores batch data of a maximum of 500 samples.
 
 
 
@@ -149,7 +149,7 @@ Pyraug provides two scripts allowing you to augment your data directly with comm
 
 
 **note**: To access to the predefined scripts you should first clone the Pyraug's repository.
-The following scripts are located in [scripts folder](https://github.com/clementchadebec/pyraug/tree/main/scripts). For the time being, only `RHVAE` modeltraining and generation is handled by the provided scripts. Models will be added as they are implemented in [pyraug.models](https://github.com/clementchadebec/pyraug/tree/main/src/pyraug/models) 
+The following scripts are located in [scripts folder](https://github.com/clementchadebec/pyraug/tree/main/scripts). For the time being, only `RHVAE` model training and generation is handled by the provided scripts. Models will be added as they are implemented in [pyraug.models](https://github.com/clementchadebec/pyraug/tree/main/src/pyraug/models) 
 
 
 ### Launching a model training:
@@ -174,7 +174,7 @@ will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-
 Then, to launch the data generation process from a trained model, you only need to run 
 
 ```
-$ python scripts/training.py --num_samples 10 --path_model_folder 'path/to/your/trained/model/folder' 
+$ python scripts/generation.py --num_samples 10 --path_to_model_folder 'path/to/your/trained/model/folder' 
 ```
 
 
@@ -182,7 +182,7 @@ The generated data is stored in several ``.pt`` files in ``outputs/my_generated_
 
 
 
-**Important**:  In the simplest configuration, default configurations are used in the scripts. You can easily override as explained in [documentation] and tutorials for a more in depth example.
+**Important**:  In the simplest configuration, default configurations are used in the scripts. You can easily override as explained in [documentation](https://pyraug.readthedocs.io/en/latest/advanced/setting_configs.html). See tutorials for a more in depth example.
 
 
 
@@ -200,13 +200,11 @@ Generated data can then be loaded pretty easily by running
 ## Getting your hands on the code
 
 To help you to understand the way Pyraug works and how you can augment your data with this library we also
-provide tutorial that you can found in [examples folder](https://github.com/clementchadebec/pyraug/tree/main/examples). In particular, you will learn to:
+provide tutorials that can be found in [examples folder](https://github.com/clementchadebec/pyraug/tree/main/examples):
 
 - [getting_started.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) explains you how to train a model and generate new data using Pyraug's Pipelines [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/getting_started.ipynb)
 - [playing _with_configs.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to amend the predefined configuration to adapt them to you data [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/making_your_own_autoencoder.ipynb)
 - [making_your_own_autoencoder.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to pass your own networks to the models implemented in Pyraug [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/making_your_own_autoencoder.ipynb)
-
-See more details in the [documentation]
 
 ## Dealing with issues
 
