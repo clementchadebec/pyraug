@@ -203,7 +203,7 @@ To help you to understand the way Pyraug works and how you can augment your data
 provide tutorials that can be found in [examples folder](https://github.com/clementchadebec/pyraug/tree/main/examples):
 
 - [getting_started.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) explains you how to train a model and generate new data using Pyraug's Pipelines [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/getting_started.ipynb)
-- [playing _with_configs.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to amend the predefined configuration to adapt them to you data [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/making_your_own_autoencoder.ipynb)
+- [playing _with_configs.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to amend the predefined configuration to adapt them to you data [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/playing _with_configs.ipynb)
 - [making_your_own_autoencoder.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to pass your own networks to the models implemented in Pyraug [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/making_your_own_autoencoder.ipynb)
 
 ## Dealing with issues
