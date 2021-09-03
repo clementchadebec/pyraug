@@ -19,7 +19,4 @@ in which are located 4 modules:
 from .base.base_vae import BaseVAE
 from .rhvae.rhvae_model import RHVAE
 
-__all__ = [
-    "BaseVAE",
-    "RHVAE"
-]
+__all__ = ["BaseVAE", "RHVAE"]

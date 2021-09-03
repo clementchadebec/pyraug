@@ -105,7 +105,7 @@ class RHVAESampler(BaseSampler):
                 file_count += 1
                 data_count -= self.samples_per_save
                 generated_data = list(
-                    torch.cat(generated_data)[self.samples_per_save:].unsqueeze(0)
+                    torch.cat(generated_data)[self.samples_per_save :].unsqueeze(0)
                 )
 
         if last_batch_samples_nbr > 0:
@@ -126,7 +126,7 @@ class RHVAESampler(BaseSampler):
                 file_count += 1
                 data_count -= self.samples_per_save
                 generated_data = list(
-                    torch.cat(generated_data)[self.samples_per_save:].unsqueeze(0)
+                    torch.cat(generated_data)[self.samples_per_save :].unsqueeze(0)
                 )
 
         if data_count > 0:

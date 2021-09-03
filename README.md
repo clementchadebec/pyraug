@@ -6,9 +6,18 @@
 <p>
 
 <p align="center">
+<a href='https://pypi.org/project/pyraug/'>
+	    <img src='https://badge.fury.io/py/pyraug.svg' />
+	</a>
+	<a href='https://opensource.org/licenses/Apache-2.0'>
+	    <img src='https://img.shields.io/badge/Apache%202.0-Apache%202.0-blue' />
+	</a>
 	<a href='https://pyraug.readthedocs.io/en/latest/?badge=latest'>
 	    <img src='https://readthedocs.org/projects/pyraug/badge/?version=latest' alt='Documentation 	Status' />
 	</a>
+</p>
+<p align="center">
+  <a href="https://pyraug.readthedocs.io/en/latest/">Documentation</a>
 </p>
 	
 
@@ -22,7 +31,7 @@ data.
 
 # Installation
 
-To install the library from [pypi.org](https://pypi.org/) run the following using ``pip`` (available as soon as licence is issued)
+To install the library from [pypi.org](https://pypi.org/) run the following using ``pip``
 
 ```bash
 $ pip install pyraug
