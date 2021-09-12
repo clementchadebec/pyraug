@@ -390,7 +390,7 @@ class Trainer:
     def eval_step(self):
         """Perform an evaluation step
 
-        Retruns:
+        Returns:
             (torch.Tensor): The evaluation loss
         """
 
@@ -415,7 +415,7 @@ class Trainer:
     def train_step(self):
         """The trainer performs training loop over the train_loader.
 
-        Retruns:
+        Returns:
             (torch.Tensor): The step training loss
         """
         # set model in train model
