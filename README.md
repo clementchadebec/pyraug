@@ -10,10 +10,13 @@
 	    <img src='https://badge.fury.io/py/pyraug.svg' />
 	</a>
 	<a href='https://opensource.org/licenses/Apache-2.0'>
-	    <img src='https://img.shields.io/badge/Licence-Apache%202.0-blue' />
+	    <img src='https://img.shields.io/github/license/clementchadebec/pyraug?color=blue' />
 	</a>
 	<a href='https://pyraug.readthedocs.io/en/latest/?badge=latest'>
 	    <img src='https://readthedocs.org/projects/pyraug/badge/?version=latest' alt='Documentation 	Status' />
+	</a>
+	<a href='https://pepy.tech/project/pyraug'>
+	    <img src='https://static.pepy.tech/personalized-badge/pyraug?period=total&units=international_system&left_color=grey&right_color=orange&left_text=Downloads' alt='Downloads 	Status' />
 	</a>
 </p>
 <p align="center">
