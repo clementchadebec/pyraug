@@ -25,9 +25,8 @@ class RHVAE(BaseVAE):
     (https://arxiv.org/pdf/2010.11518.pdf). This model provides a way to
     learn the Riemannian latent structure of a given set of data set through a parametrized
     Riemannian metric having the following shape:
-
     :math:`\mathbf{G}^{-1}(z) = \sum \limits _{i=1}^N L_{\psi_i} L_{\psi_i}^{\top} \exp
-        \Big(-\frac{\lVert z - c_i \rVert_2^2}{T^2} \Big) + \lambda I_d`
+    \Big(-\frac{\lVert z - c_i \rVert_2^2}{T^2} \Big) + \lambda I_d`
 
     and to generate new data. It is particularly well suited for High
     Dimensional data combined with low sample number and proved relevant for Data Augmentation as
