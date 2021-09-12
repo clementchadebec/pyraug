@@ -39,7 +39,7 @@ class BaseEncoder(nn.Module):
             The output order in here important. Do not forget to set :math:`\mu` as first argument and
             the log variance then.
         """
-        NotImplementedError()
+        raise NotImplementedError()
 
 
 class BaseDecoder(nn.Module):

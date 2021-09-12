@@ -6,3 +6,4 @@ class Pipeline:
         """
         The method run the Pipeline process and must be implemented in a child class
         """
+        raise NotImplementedError()

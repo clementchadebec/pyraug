@@ -58,7 +58,7 @@ class BaseSampler:
         Args:
             num_samples (int): The number of samples to generate
         """
-        raise not NotImplementedError()
+        raise NotImplementedError()
 
     def save(self, dir_path):
         """Method to save the sampler config. The config is saved a as ``sampler_config.json``
