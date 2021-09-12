@@ -4,4 +4,4 @@ dill==0.3.3
 nibabel==3.2.1
 pydantic==1.8.2
 dataclasses==0.6
-Pillow==8.3.0
+pillow>=8.3.2
