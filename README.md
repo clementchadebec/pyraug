@@ -16,7 +16,7 @@
 	    <img src='https://readthedocs.org/projects/pyraug/badge/?version=latest' alt='Documentation 	Status' />
 	</a>
 	<a href='https://pepy.tech/project/pyraug'>
-	    <img src='https://static.pepy.tech/personalized-badge/pyraug?period=total&units=international_system&left_color=grey&right_color=orange&left_text=downloads' alt='Downloads 	Status' />
+	    <img src='https://static.pepy.tech/personalized-badge/pyraug?period=total&units=none&left_color=grey&right_color=orange&left_text=downloads' alt='Downloads 	Status' />
 	</a>
 </p>
 <p align="center">
