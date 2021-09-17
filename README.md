@@ -113,7 +113,7 @@ Then the `TrainingPipeline` can be launched by running:
 ```
 
 At the end of training, the model weights ``models.pt`` and model config ``model_config.json`` file 
-will be saved in a folder ``outputs/my_model_from_script/training_YYYY-MM-DD_hh-mm-ss/final_model``. 
+will be saved in a folder ``outputs/my_model/training_YYYY-MM-DD_hh-mm-ss/final_model``. 
 
 **Important**: For high dimensional data we advice you to provide you own network architectures and potentially adapt the training and model parameters see [documentation](https://pyraug.readthedocs.io/en/latest/advanced_use.html) for more details.
 
