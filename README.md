@@ -82,7 +82,7 @@ This will by default train a `RHVAE` model with default autoencoding architectur
 >>> pipeline(train_data=dataset_to_augment)
 ```
 
-where ``dataset_to_augment`` is either a `numpy.ndarray`, `torch.Tensor` or a path to a folder where each file is a data (handled data format are ``.pt``, ``.nii``, ``.nii.gz``, ``.bmp``, ``.jpg``, ``.jpeg``, ``.png``). 
+where ``dataset_to_augment`` is either a `numpy.ndarray`, `torch.Tensor` or a path to a folder where each file is a data (handled data formats are ``.pt``, ``.nii``, ``.nii.gz``, ``.bmp``, ``.jpg``, ``.jpeg``, ``.png``). 
 
 More generally, you can instantiate your own model and train it with the `TrainingPipeline`. For instance, if you want to instantiate a basic `RHVAE` run:
 
@@ -93,12 +93,12 @@ More generally, you can instantiate your own model and train it with the `Traini
 >>> model_config = RHVAEConfig(
 ...    input_dim=int(intput_dim)
 ... ) # input_dim is the shape of a flatten input data
-...   # needed if you do not provided your own architectures
+...   # needed if you did not provide your own architectures
 >>> model = RHVAE(model_config)
 ```
 
 
-In case you instantiate yourself a model as shown above and you do not provided all the network architectures (encoder, decoder & metric if applicable), the `ModelConfig` instance will expect you to provide the input dimension of your data which equals to ``n_channels x height x width x ...``. Pyraug's VAE models' networks indeed default to Multi Layer Perceptron neural networks which automatically adapt to the input data shape. 
+In case you instantiate yourself a model as shown above and you did not provide all the network architectures (encoder, decoder & metric if applicable), the `ModelConfig` instance will expect you to provide the input dimension of your data which equals to ``n_channels x height x width x ...``. Pyraug's VAE models' networks indeed default to Multi Layer Perceptron neural networks which automatically adapt to the input data shape. 
 
 **note**: In case you have different size of data, Pyraug will reshape it to the minimum size ``min_n_channels x min_height x min_width x ...``
 
@@ -206,7 +206,7 @@ To help you to understand the way Pyraug works and how you can augment your data
 provide tutorials that can be found in [examples folder](https://github.com/clementchadebec/pyraug/tree/main/examples):
 
 - [getting_started.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) explains you how to train a model and generate new data using Pyraug's Pipelines [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/getting_started.ipynb)
-- [playing_with_configs.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to amend the predefined configuration to adapt them to you data [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/playing_with_configs.ipynb)
+- [playing_with_configs.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to amend the predefined configuration to adapt them to your data [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/playing_with_configs.ipynb)
 - [making_your_own_autoencoder.ipynb](https://github.com/clementchadebec/pyraug/tree/main/examples) shows you how to pass your own networks to the models implemented in Pyraug [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/clementchadebec/pyraug/blob/main/examples/making_your_own_autoencoder.ipynb)
 
 ## Dealing with issues
