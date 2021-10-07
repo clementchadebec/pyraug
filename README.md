@@ -228,18 +228,6 @@ If you use this library please consider citing us:
 	year = {2021}
 }
 ```
-```bibtex
-@article{chadebec_geometry-aware_2020,
-	title = {Geometry-{Aware} {Hamiltonian} {Variational} {Auto}-{Encoder}},
-	copyright = {All rights reserved},
-	journal = {arXiv preprint arXiv:2010.11518},
-    	arxiv = {2010.11518},
-	author = {Chadebec, Clément and Mantoux, Clément and Allassonnière, Stéphanie},
-	year = {2020}
-}
-
-
-```
 
 ### Credits
 Logo: [SaulLu](https://github.com/saullu)
