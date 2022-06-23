@@ -14,7 +14,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pyraug",
-    version="0.0.5",
+    version="0.0.6",
     author="Clement Chadebec (HekA team INRIA)",
     author_email="clement.chadebec@inria.fr",
     description="Data Augmentation with VAE",
@@ -33,7 +33,7 @@ setup(
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     install_requires=[
-        "numpy>=1.19.0",
+        "numpy>=1.22.0",
         "Pillow>=8.3.2",
         "torch>=1.8.1",
         "dill>=0.3.3",
