@@ -4,7 +4,7 @@ several Pyraug's instances which are articulated together.
 
 A :class:`__call__` function is defined and used to launch the Pipeline. """
 
-from pyraug.pipelines.generation import GenerationPipeline
-from pyraug.pipelines.training import TrainingPipeline
+from src.pyraug.pipelines.generation import GenerationPipeline
+from src.pyraug.pipelines.training import TrainingPipeline
 
 __all__ = ["TrainingPipeline", "GenerationPipeline"]

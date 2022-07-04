@@ -1,7 +1,7 @@
-from pyraug.models import BaseVAE
-from pyraug.models.base.base_sampler import BaseSampler
-from pyraug.models.rhvae import RHVAESamplerConfig
-from pyraug.models.rhvae.rhvae_sampler import RHVAESampler
+from src.pyraug.models import BaseVAE
+from src.pyraug.models.base.base_sampler import BaseSampler
+from src.pyraug.models.rhvae import RHVAESamplerConfig
+from src.pyraug.models.rhvae.rhvae_sampler import RHVAESampler
 
 from .base_pipeline import Pipeline
 
