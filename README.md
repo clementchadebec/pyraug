@@ -219,13 +219,12 @@ If you are experiencing any issues while running the code or request new feature
 If you use this library please consider citing us:
 
 ```bibtex
-@article{chadebec_data_2021,
-	title = {Data {Augmentation} in {High} {Dimensional} {Low} {Sample} {Size} {Setting} {Using} a {Geometry}-{Based} {Variational} {Autoencoder}},
-	copyright = {All rights reserved},
-	journal = {arXiv preprint arXiv:2105.00026},
-  	arxiv = {2105.00026},
-	author = {Chadebec, Clément and Thibeau-Sutre, Elina and Burgos, Ninon and Allassonnière, Stéphanie},
-	year = {2021}
+@article{chadebec2022data,
+  title={Data augmentation in high dimensional low sample size setting using a geometry-based variational autoencoder},
+  author={Chadebec, Cl{\'e}ment and Thibeau-Sutre, Elina and Burgos, Ninon and Allassonni{\`e}re, St{\'e}phanie},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year={2022},
+  publisher={IEEE}
 }
 ```
 
