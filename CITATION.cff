@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+date-released: 2022-06
+message: "If you use this software, please cite it as below."
+title: "Data augmentation in high dimensional low sample size setting using a geometry-based variational autoencoder"
+url: "https://github.com/clementchadebec/pyraug"
+authors:
+- family-names: Chadebec
+  given-names: Clément
+- family-names: Thibeau-Sutre
+  given-names: Elina
+- family-names: Burgos
+  given-names: Ninon
+- family-names: Allassonnière
+  given-names: Stéphanie
+preferred-citation:
+  type: article
+  authors:
+  - family-names: Chadebec
+    given-names: Clément
+  - family-names: Thibeau-Sutre
+    given-names: Elina
+  - family-names: Burgos
+    given-names: Ninon
+  - family-names: Allassonnière
+    given-names: Stéphanie
+  journal: "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  publisher: IEEE
+  title: "Data augmentation in high dimensional low sample size setting using a geometry-based variational autoencoder"
+  year: 2022
+  url: "https://arxiv.org/abs/2105.00026"
+  address: "Online"
